@@ -13,7 +13,7 @@
     "doctor": "node scripts/doctor.mjs",
     "coletar": "node src/coletar.js",
     "rodada": "node src/coletar.js",
-    "test": "node --test \"test/*.test.js\" --test-skip-pattern=\"rede\"",
+    "test": "node --test test/",
     "instrucoes": "node scripts/instrucoes.mjs",
     "test:rede": "VAGAS_REDE=1 node --test test/integracao.test.js",
     "enriquecer": "node scripts/enriquecer.mjs",
