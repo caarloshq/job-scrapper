@@ -36,8 +36,9 @@ const PADROES = [
 
 /** Onde a checagem não entra. */
 const IGNORAR_DIR = new Set(['.git', 'node_modules', 'data', 'builds', 'materiais-fonte', '__pycache__', 'Curriculo']);
-// README e LICENSE citam o autor de proposito (credito e licenca). O resto do repositorio, nao.
-const IGNORAR_ARQ = new Set(['.env', 'checar-publico.mjs', '.DS_Store', 'README.md', 'LICENSE']);
+// README, LICENSE, PRODUCT.md e DESIGN.md citam o autor de proposito (credito, licenca e
+// origem das decisoes de produto e de design). O resto do repositorio, nao.
+const IGNORAR_ARQ = new Set(['.env', 'checar-publico.mjs', '.DS_Store', 'README.md', 'LICENSE', 'PRODUCT.md', 'DESIGN.md']);
 const EXTENSOES = /\.(js|mjs|json|md|py|html|css|txt|yml|yaml|example)$/;
 
 function listar(dir) {
