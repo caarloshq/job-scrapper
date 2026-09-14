@@ -1,0 +1,29 @@
+{
+  "name": "caca-vagas",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Caça-vagas + currículo adaptado. Busca vagas (portais, ATS e LinkedIn via Apify), pontua contra o seu perfil e adapta o currículo acima do corte.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node scripts/onboarding.mjs --abrir",
+    "setup": "node scripts/setup.mjs",
+    "doctor": "node scripts/doctor.mjs",
+    "coletar": "node src/coletar.js",
+    "rodada": "node src/coletar.js",
+    "test": "node --test \"test/*.test.js\" --test-skip-pattern=\"rede\"",
+    "instrucoes": "node scripts/instrucoes.mjs",
+    "test:rede": "VAGAS_REDE=1 node --test test/integracao.test.js",
+    "enriquecer": "node scripts/enriquecer.mjs",
+    "pendentes": "node scripts/pendentes.mjs",
+    "descobrir": "node scripts/descobrir-empresas.mjs",
+    "validar:respostas": "node scripts/validar-respostas.mjs",
+    "test:curriculo": "python3 -m unittest discover -s ../Skills/adapt-resume/tests -p \"test_*.py\"",
+    "apify": "node scripts/apify.mjs",
+    "checar:publico": "node scripts/checar-publico.mjs",
+    "onboarding": "node scripts/onboarding.mjs",
+    "quadro": "node scripts/quadro.mjs"
+  }
+}

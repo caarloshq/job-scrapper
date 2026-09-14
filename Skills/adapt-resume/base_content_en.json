@@ -1,0 +1,107 @@
+{
+  "name": "Ana Beatriz Souza (EXAMPLE, replace with your data in block 3 of ONBOARDING.md)",
+  "headline": "Senior Front-End Developer | B2B Products | React · Design Systems · AI",
+  "contact1": "Curitiba, Paraná, Brazil · +55 (41) 9 0000-0000 · example@email.com",
+  "contact2": "linkedin.com/in/exemplo · github.com/exemplo",
+  "labels": {
+    "summary": "Summary",
+    "skills": "Skills & Tools",
+    "skills_prefix": "Skills:",
+    "tools_prefix": "Tools & Methods:",
+    "experience": "Work Experience",
+    "education": "Education",
+    "certifications": "Certifications & Awards",
+    "award_prefix": "Award:",
+    "languages": "Languages",
+    "volunteer": "Volunteering"
+  },
+  "summary": "Front-End Developer with 6 years of experience, based in Curitiba. Over the past 2 years, led the rebuild of NimbusTech's B2B dashboard, an inventory management platform for retail chains, from scratch, now used by 400+ stores. Built the company's component library from the ground up and integrated generative AI into the development workflow. Earlier, worked at Loja Rápida, a mid-size e-commerce company. Core work spans React, TypeScript, Design Systems, and close collaboration with product and design.",
+  "core_skills": [
+    "End-to-end front-end for B2B products, from prototype to production",
+    "Component library and Design System built from scratch to standardize teams",
+    "AI-native workflow with GitHub Copilot to speed up delivery and code review",
+    "Technical mentorship and code review to raise the team's bar",
+    "Close collaboration with product and design to turn requirements into interfaces"
+  ],
+  "skills_line": "React · TypeScript · Design Systems · Automated Testing · Accessibility · Web Performance · Technical Mentorship · Artificial Intelligence (AI)",
+  "tools_line": "React · TypeScript · Figma · GitHub Copilot · Storybook · Jest · Vite",
+  "numeros_travados": [
+    "400+ stores",
+    "load time by 60%",
+    "35% to 78%",
+    "coverage"
+  ],
+  "regras_extra": [
+    "Current title = Senior Front-End Developer.",
+    "The mentorship bullet is always the last one at NimbusTech."
+  ],
+  "nunca_citar": [],
+  "experience": [
+    {
+      "role": "Senior Front-End Developer",
+      "company": "NimbusTech",
+      "dates": "March 2023 to Present",
+      "desc": "Inventory management platform for retail chains, now used by 400+ stores nationwide.",
+      "bullets": [
+        "Joined NimbusTech when the B2B dashboard was an internal prototype and led the full rebuild from scratch, now in production across 400+ stores.",
+        "Built the platform's component library and Design System, cutting development time for new screens in half.",
+        "Optimized the dashboard's initial load, reducing load time by 60% through code-splitting and data caching.",
+        "Redesigned the product registration flow, raising completion rate from 35% to 78% in two months.",
+        "Integrated GitHub Copilot into the team's development workflow, with review guidelines that maintained 90% test coverage.",
+        "Mentored three junior developers, reviewing code and running weekly pairing sessions."
+      ],
+      "bullets_temas": [
+        [
+          "zero-a-um",
+          "b2b"
+        ],
+        [
+          "design-system"
+        ],
+        [
+          "metricas"
+        ],
+        [
+          "onboarding",
+          "metricas"
+        ],
+        [
+          "ia"
+        ],
+        [
+          "lideranca"
+        ]
+      ]
+    },
+    {
+      "role": "Mid-level Front-End Developer",
+      "company": "Loja Rápida",
+      "dates": "January 2021 to February 2023",
+      "desc": "Mid-size e-commerce focused on fashion, serving consumers across Southern Brazil.",
+      "bullets": [
+        "Ran usability tests on the checkout flow that guided its redesign, reducing cart abandonment.",
+        "Built reusable React components for the product catalog, used across the whole platform."
+      ],
+      "bullets_temas": [
+        [
+          "research"
+        ],
+        [
+          "design-system"
+        ]
+      ]
+    }
+  ],
+  "education": [
+    [
+      "Example University",
+      "Computer Science",
+      "2015 to 2019"
+    ]
+  ],
+  "certifications": "",
+  "award": "",
+  "languages": "English (Native)",
+  "volunteer": [],
+  "incluir_voluntariado": false
+}

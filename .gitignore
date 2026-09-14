@@ -1,0 +1,18 @@
+.DS_Store
+node_modules/
+.env
+.env.*
+!.env.example
+*.log
+__pycache__/
+*.pyc
+
+# Saídas pessoais de quem usa: currículo gerado por vaga, materiais colados,
+# rascunhos. Nada disso é do projeto.
+/Curriculo/
+/Skills/adapt-resume/materiais-fonte/*
+!/Skills/adapt-resume/materiais-fonte/README.md
+/Skills/adapt-resume/builds/*
+!/Skills/adapt-resume/builds/.gitkeep
+/Skills/adapt-resume/base_resume_*.pdf
+.claude/

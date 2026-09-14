@@ -1,0 +1,29 @@
+{
+  "_nota": "Equivalencias reais do vocabulario de produto. Servem para a checagem de cobertura nao acusar 'ausente' quando o curriculo diz a mesma coisa com outra palavra — o anuncio pede 'user research' e o curriculo diz 'pesquisa com usuario'. Cada linha e um grupo: qualquer termo do grupo cobre qualquer outro. Editar aqui, nunca no codigo.",
+  "grupos": [
+    ["design system", "design systems", "sistema de design", "biblioteca de componentes", "component library", "design tokens"],
+    ["discovery", "descoberta", "product discovery", "descoberta de produto"],
+    ["research", "pesquisa", "user research", "pesquisa com usuario", "pesquisa com usuarios", "ux research"],
+    ["usability", "usabilidade", "teste de usabilidade", "testes de usabilidade", "usability testing"],
+    ["prototype", "prototipo", "prototipos", "prototipacao", "prototyping", "prototipagem"],
+    ["wireframe", "wireframes", "esboco", "esbocos"],
+    ["stakeholder", "stakeholders", "partes interessadas"],
+    ["handoff", "entrega para engenharia", "passagem para desenvolvimento"],
+    ["design ops", "designops", "operacoes de design"],
+    ["ai", "ia", "inteligencia artificial", "artificial intelligence", "llm", "genai"],
+    ["b2b", "corporativo", "enterprise"],
+    ["saas", "software como servico"],
+    ["fintech", "financeiro", "servicos financeiros", "financial services"],
+    ["onboarding", "cadastro", "ativacao"],
+    ["dashboard", "dashboards", "painel", "paineis"],
+    ["accessibility", "acessibilidade", "wcag"],
+    ["journey", "jornada", "jornadas", "user journey", "mapa de jornada"],
+    ["metrics", "metricas", "indicadores", "kpi", "kpis"],
+    ["conversion", "conversao", "taxa de conversao"],
+    ["end to end", "ponta a ponta", "ciclo completo", "full cycle"],
+    ["cross functional", "multidisciplinar", "times multidisciplinares"],
+    ["figma", "figjam"],
+    ["mentoring", "mentoria", "mentorship"],
+    ["strategy", "estrategia", "design strategy", "estrategia de design"]
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "_nota": "Seu perfil de busca. O onboarding (ONBOARDING.md) preenche isto na entrevista; editar aqui muda o comportamento da rodada sem tocar em codigo.",
+  "_configurado": false,
+  "_configurado_em": null,
+  "cargo_alvo": "",
+  "_nota_cargo_alvo": "Bloco 1 do onboarding: o cargo que a pessoa esta buscando, como aparece em anuncio (ex.: 'Senior Product Designer', 'Engenheira de Dados'). Vazio = onboarding nao rodou.",
+  "pais": "",
+  "_nota_pais": "Bloco 1: pais onde a pessoa mora. As fontes 'nacionais' sao portais do BRASIL; quem mora fora escolhe mercado internacional. O filtro das fontes internacionais so deixa passar vaga que aceita LATAM (src/fontes/intl.js): quem mora fora da America Latina precisa ajustar a lista ACEITA la, e o onboarding avisa.",
+  "cidade": "",
+  "_nota_cidade": "So importa se aceita_hibrido ou aceita_presencial for true: vaga hibrida ou presencial so entra quando cita esta cidade. Vazio = nao confere, e passa.",
+  "mercado": {
+    "_nota": "Bloco 2 do onboarding. foco: nacional, internacional ou ambos. Com 'ambos', prioridade diz qual sobe na nota; a vaga do outro mercado entra com o desconto abaixo, nunca e descartada. O foco tambem liga e desliga fontes (src/mercado.js) e decide o idioma do curriculo base.",
+    "foco": null,
+    "prioridade": null,
+    "desconto_fora_da_prioridade": 6
+  },
+  "fontes_desligadas": [],
+  "_nota_fontes_desligadas": "Nome de fonte (como em src/fontes/*.js → NOME) que nao entra na rodada. O onboarding poe 'Vagas UX' aqui para quem nao e de design.",
+  "profissao_confirmada": false,
+  "salario_confirmado": false,
+  "_nota_confirmacoes": "Viram true quando a pessoa confirma, no onboarding, que palavras-chave.json e os valores de salario abaixo sao dela e nao o exemplo.",
+  "_regra_local": "Decidido em 2026-07-30, e substitui a regra anterior, que era por região.: a vaga TEM QUE SER REMOTA, de qualquer pais. Geografia nao importa mais. Hibrido e presencial saem, em qualquer cidade. Ingles nunca bloqueia: nivel B2 (intermediario alto) basta, e vaga que exige fluencia entra com desconto leve e nota em Gaps.",
+  "exigir_remoto": true,
+  "aceita_hibrido": false,
+  "aceita_presencial": false,
+  "modelo_desconhecido_passa": true,
+  "ingles": {
+    "bloqueia": false,
+    "intermediario_basta": true,
+    "desconto_forte": 4,
+    "desconto_desejavel": 0,
+    "sempre_anotar_em_gaps": true
+  },
+  "senioridade": {
+    "_nota": "Somente descartadas e lido pelo filtro. A lista de aceitas existia aqui e nunca era consultada, o que engana quem for ajustar.",
+    "descartadas": [
+      "junior",
+      "estagio",
+      "trainee",
+      "aprendiz"
+    ]
+  },
+  "frescor": {
+    "_nota": "Idade em dias sobre a data efetiva = max(publishedDate, updatedAt, republishedAt). parada_ate = 30 dias, padrao decidido em 2026-09-14.",
+    "nova_ate": 7,
+    "recente_ate": 21,
+    "parada_ate": 30,
+    "parada_exige_score_minimo": 70
+  },
+  "salario": {
+    "_nota": "Decidido em 2026-07-30: salario baixo descarta, igual a vaga junior. Piso em reais por mes. So descarta quando o valor E o periodo sao conhecidos: periodo desconhecido passa, porque falso positivo custa vaga boa. Cambio grosseiro e proposital, serve so para comparar ordem de grandeza.",
+    "minimo_mensal_brl": 8000,
+    "cambio": {
+      "BRL": 1,
+      "USD": 5.4,
+      "EUR": 5.9
+    },
+    "referencia_atual_brl": 10000,
+    "pleno_ok_acima_da_referencia": true,
+    "_nota_pleno": "Decidido em 2026-07-30. Nacional: Pleno so vale senior com salario informado acima da referencia (referencia_atual_brl); sem salario informado, perde prioridade. Internacional: vale senior mesmo sem salario informado, porque la fora mid-level costuma pagar acima do senior daqui e a ausencia do numero nao e sinal de vaga pior. Internacional e detectado por moeda estrangeira ou anuncio em ingles, NUNCA pelo ATS: o Greenhouse hospeda Arco e QuintoAndar tanto quanto Figma.",
+    "_fonte_referencia": "config/perfil-candidatura.json#remuneracao.remuneracao_atual_mensal_brl, voce em 2026-09-14"
+  },
+  "limites": {
+    "score_minimo_para_notion": 40,
+    "teto_nao_validada": 55,
+    "teto_fonte_solta": 60,
+    "max_semantico_por_rodada": 25
+  },
+  "pesos": {
+    "titulo_max": 20,
+    "senioridade_max": 10,
+    "dominio_max": 10,
+    "sinais_max": 15,
+    "frescor_max": 5,
+    "semantico_max": 40
+  },
+  "curriculo": {
+    "_nota": "Corte para a rodada deixar a instrucao .md pronta. 75% escolhido pelo voce em 2026-07-30: com 80 entravam 4 vagas, com 65 entravam 26 e a maioria da faixa baixa e agregador sem empresa revelada. O .md NAO e curriculo — e o rascunho que ele le e aprova antes de a skill adapt-resume rodar.",
+    "gerar_instrucao_acima_de": 75
+  }
+}

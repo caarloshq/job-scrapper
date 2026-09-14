@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caça-vagas · Quadro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAFA; --surface: #FFFFFF; --surface-2: #F3F5FB;
+    --border: #E5E5E5; --border-strong: #C7C7C7;
+    --text: #0D0D0D; --text-2: #464646; --text-3: #707070;
+    --accent: #1E3FD1; --accent-hover: #1633AB; --accent-soft: #CAD6FF; --accent-deep: #000766;
+    --ok: #0E7A4A; --ok-soft: #DCF3E7; --warn: #8A5A00; --warn-soft: #FFF1CC; --error: #B3261E; --error-soft: #FBE3E1;
+    --r: 4px; --r-control: 8px; --r-card: 16px;
+    --font: Montserrat, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  * { box-sizing: border-box; }
+  html { color-scheme: light; scrollbar-gutter: stable; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 400 16px/24px var(--font); -webkit-font-smoothing: antialiased; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+  header.top { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+  .top-inner { display: flex; align-items: center; gap: 16px; padding: 12px 24px; flex-wrap: wrap; }
+  .top-inner h1 { font: 600 24px/32px var(--font); letter-spacing: -0.01em; margin: 0; }
+  .top-inner .sub { font: 400 14px/20px var(--font); color: var(--text-3); }
+  .top-inner .espaco { flex: 1; }
+  .vistas { display: inline-flex; border: 1px solid var(--border-strong); border-radius: var(--r-control); overflow: hidden; }
+  .vistas button { height: 36px; padding: 0 14px; border: 0; background: var(--surface); color: var(--text-2); font: 500 14px/20px var(--font); cursor: pointer; transition: background .15s, color .15s; }
+  .vistas button[aria-pressed=true] { background: var(--accent); color: #fff; }
+  .vistas button:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
+  input.busca { height: 36px; padding: 0 12px; border: 1px solid var(--border-strong); border-radius: var(--r-control); background: var(--surface); font: 400 14px/20px var(--font); min-width: 220px; }
+  input.busca:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
+
+  main { padding: 16px 24px 40px; }
+  .aviso { border-radius: var(--r-control); padding: 12px 16px; font: 400 14px/20px var(--font); margin: 0 0 16px; animation: subir .22s var(--ease) both; }
+  .aviso.info { background: var(--surface-2); color: var(--text-2); }
+  .aviso.erro { background: var(--error-soft); color: var(--error); }
+  .aviso.ok { background: var(--ok-soft); color: var(--ok); }
+
+  /* kanban */
+  .colunas { display: grid; grid-template-columns: repeat(5, minmax(240px, 1fr)); gap: 12px; overflow-x: auto; padding-bottom: 8px; align-items: start; }
+  .coluna { background: var(--surface-2); border-radius: var(--r-card); padding: 8px; min-height: 200px; transition: background .15s, box-shadow .15s; }
+  .coluna.sobre { background: var(--accent-soft); box-shadow: inset 0 0 0 2px var(--accent); }
+  .coluna h2 { font: 500 14px/20px var(--font); color: var(--text-2); margin: 4px 8px 8px; display: flex; justify-content: space-between; }
+  .coluna h2 span { color: var(--text-3); font-weight: 400; }
+  .cards { display: grid; gap: 8px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-control); padding: 12px; cursor: grab; transition: border-color .15s, box-shadow .15s, transform .12s; animation: subir .22s var(--ease) both; }
+  .card:hover { border-color: var(--border-strong); box-shadow: 0 2px 8px rgba(13, 13, 13, .06); }
+  .card:active { cursor: grabbing; }
+  .card.arrastando { opacity: .5; transform: scale(.98); }
+  .card:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
+  .card .t { font-weight: 500; line-height: 20px; display: block; }
+  .card .e { font: 400 14px/20px var(--font); color: var(--text-2); display: block; margin-top: 2px; }
+  .card .m { display: flex; align-items: center; gap: 8px; margin-top: 8px; font: 400 14px/20px var(--font); color: var(--text-3); flex-wrap: wrap; }
+  .nota { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 9999px; font: 500 14px/20px var(--font); background: var(--accent-soft); color: var(--accent-deep); }
+  .nota.alta { background: var(--ok-soft); color: var(--ok); }
+  .nota.nao-lida { background: var(--surface-2); color: var(--text-3); }
+  .card details { margin-top: 8px; }
+  .card summary { font: 500 14px/20px var(--font); color: var(--accent); cursor: pointer; list-style: none; }
+  .card summary::-webkit-details-marker { display: none; }
+  .card .detalhe { font: 400 14px/20px var(--font); color: var(--text-2); margin-top: 8px; }
+  .card .detalhe p { margin: 0 0 8px; }
+  .card .detalhe a { color: var(--accent); }
+  .card .mover { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .card .mover button, .btn { height: 32px; padding: 0 12px; border: 1px solid var(--border-strong); border-radius: var(--r-control); background: var(--surface); color: var(--text); font: 500 14px/20px var(--font); cursor: pointer; transition: border-color .15s, background .15s, transform .12s; }
+  .card .mover button:hover, .btn:hover { border-color: var(--text-3); }
+  .card .mover button:active, .btn:active { transform: scale(.98); }
+  .historico { margin: 8px 0 0; padding: 0; list-style: none; font: 400 14px/20px var(--mono); color: var(--text-3); }
+  .vazio { padding: 24px 8px; text-align: center; font: 400 14px/20px var(--font); color: var(--text-3); }
+
+  /* tabela */
+  .tabela-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-card); overflow: hidden; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font: 400 14px/20px var(--font); vertical-align: top; }
+  th { font-weight: 500; color: var(--text-3); background: var(--surface-2); white-space: nowrap; }
+  td.t { font-weight: 500; color: var(--text); }
+  td a { color: var(--accent); }
+  select.status { height: 32px; padding: 0 8px; border: 1px solid var(--border-strong); border-radius: var(--r-control); background: var(--surface); font: 400 14px/20px var(--font); }
+  select.status:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
+  tr.animada { animation: subir .22s var(--ease) both; }
+
+  @keyframes subir { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .ic { vertical-align: middle; flex: none; }
+  [hidden] { display: none !important; }
+  @media (max-width: 720px) { .colunas { grid-template-columns: repeat(5, 84vw); } }
+</style>
+</head>
+<body>
+  <header class="top"><div class="top-inner">
+    <h1>Quadro</h1>
+    <span class="sub" id="sub">carregando…</span>
+    <span class="espaco"></span>
+    <input class="busca" id="busca" type="search" placeholder="Buscar vaga ou empresa" aria-label="Buscar vaga ou empresa">
+    <div class="vistas" role="group" aria-label="Vista">
+      <button type="button" id="v-quadro" aria-pressed="true">Quadro</button>
+      <button type="button" id="v-tabela" aria-pressed="false">Tabela</button>
+    </div>
+  </div></header>
+  <main>
+    <div id="avisos"></div>
+    <section id="quadro" class="colunas" aria-label="Vagas por fase"></section>
+    <section id="tabela" class="tabela-wrap" hidden></section>
+  </main>
+
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const ICONES = {
+    link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+    clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  };
+  const icone = (n, t = 14) => `<svg class="ic" width="${t}" height="${t}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[n]}</svg>`;
+  let dados = { vagas: [], status: [], contagem: {} };
+  let vista = 'quadro';
+  let filtro = '';
+
+  function aviso(tipo, msg) {
+    const el = document.createElement('div'); el.className = `aviso ${tipo}`; el.textContent = msg;
+    $('#avisos').replaceChildren(el);
+    if (tipo !== 'erro') setTimeout(() => { if (el.parentElement) el.remove(); }, 4000);
+  }
+
+  async function carregar() {
+    try {
+      const r = await fetch('/api/vagas'); dados = await r.json(); render();
+    } catch {
+      aviso('erro', 'O servidor local não respondeu. No terminal, dentro de vagas/, rode: npm run quadro. Depois recarregue.');
+    }
+  }
+
+  async function mover(id, status) {
+    try {
+      const r = await fetch('/api/status', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id, status }) });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.erro || 'falhou');
+      dados = j; render();
+      aviso('ok', `Movida para ${status}. Fica no histórico.`);
+    } catch (e) { aviso('erro', `Não moveu: ${e.message}`); }
+  }
+
+  const visiveis = () => dados.vagas.filter((v) => !filtro || `${v.titulo} ${v.empresa}`.toLowerCase().includes(filtro));
+  const notaHtml = (v) => v.compatibilidade == null ? '' : `<span class="nota ${v.lida === false ? 'nao-lida' : v.compatibilidade >= 75 ? 'alta' : ''}" title="${v.lida === false ? 'Ainda não lida: nota pela metade' : 'Índice de prioridade'}">${v.lida === false ? '~' : ''}${v.compatibilidade}%</span>`;
+  const idade = (v) => v.idadeDias == null ? '' : v.idadeDias === 0 ? 'hoje' : `${v.idadeDias}d`;
+  const dataCurta = (iso) => new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+
+  function cardHtml(v) {
+    const outros = dados.status.filter((s) => s !== v.status);
+    return `<article class="card" draggable="true" tabindex="0" data-id="${esc(v.id)}" aria-label="${esc(v.titulo)} na ${esc(v.empresa || '')}">
+      <span class="t">${esc(v.titulo)}</span>
+      <span class="e">${esc(v.empresa || 'empresa não informada')}</span>
+      <div class="m">${notaHtml(v)}${v.salario && v.salario !== '—' ? `<span>${esc(v.salario)}</span>` : ''}${idade(v) ? `<span>${icone('clock')} ${idade(v)}</span>` : ''}${v.fonte ? `<span>${esc(v.fonte)}</span>` : ''}${v.noCache ? '' : '<span title="Não está mais na coleta; ficou o retrato">arquivada</span>'}</div>
+      <details><summary>Detalhes</summary><div class="detalhe">
+        ${v.resumo ? `<p>${esc(v.resumo)}</p>` : '<p>Ainda sem leitura: peça ao agente pra ler as pendentes.</p>'}
+        ${v.gaps ? `<p><strong>Gaps:</strong> ${esc(v.gaps)}</p>` : ''}
+        ${v.link ? `<p><a href="${esc(v.link)}" target="_blank" rel="noopener">${icone('link')} Abrir o anúncio</a></p>` : ''}
+        <div class="mover">${outros.map((s) => `<button type="button" data-mover="${esc(s)}">${esc(s)}</button>`).join('')}</div>
+        <ul class="historico">${(v.historico || []).slice(-5).map((h) => `<li>${dataCurta(h.em)} · ${esc(h.de || 'entrou')} → ${esc(h.para)}</li>`).join('')}</ul>
+      </div></details>
+    </article>`;
+  }
+
+  function renderQuadro() {
+    const lista = visiveis();
+    $('#quadro').innerHTML = dados.status.map((s) => {
+      const cards = lista.filter((v) => v.status === s || (s === 'Já apliquei' && v.status === 'Aplicado por IA'));
+      return `<div class="coluna" data-status="${esc(s)}"><h2>${esc(s)} <span>${cards.length}</span></h2><div class="cards">${cards.length ? cards.map(cardHtml).join('') : '<div class="vazio">nada aqui</div>'}</div></div>`;
+    }).join('');
+    for (const card of document.querySelectorAll('.card')) {
+      card.addEventListener('dragstart', (ev) => { ev.dataTransfer.setData('text/plain', card.dataset.id); card.classList.add('arrastando'); });
+      card.addEventListener('dragend', () => card.classList.remove('arrastando'));
+      card.querySelectorAll('[data-mover]').forEach((b) => b.addEventListener('click', () => mover(card.dataset.id, b.dataset.mover)));
+    }
+    for (const col of document.querySelectorAll('.coluna')) {
+      col.addEventListener('dragover', (ev) => { ev.preventDefault(); col.classList.add('sobre'); });
+      col.addEventListener('dragleave', () => col.classList.remove('sobre'));
+      col.addEventListener('drop', (ev) => { ev.preventDefault(); col.classList.remove('sobre'); const id = ev.dataTransfer.getData('text/plain'); if (id) mover(id, col.dataset.status); });
+    }
+  }
+
+  function renderTabela() {
+    const lista = visiveis();
+    $('#tabela').innerHTML = `<table><thead><tr><th>Nota</th><th>Vaga</th><th>Empresa</th><th>Salário</th><th>Idade</th><th>Fonte</th><th>Fase</th><th></th></tr></thead><tbody>
+      ${lista.map((v) => `<tr class="animada" data-id="${esc(v.id)}"><td>${notaHtml(v)}</td><td class="t">${esc(v.titulo)}</td><td>${esc(v.empresa || '')}</td><td>${esc(v.salario || '')}</td><td>${idade(v)}</td><td>${esc(v.fonte || '')}</td>
+        <td><select class="status" aria-label="Fase de ${esc(v.titulo)}">${[...dados.status, ...(dados.status.includes(v.status) ? [] : [v.status])].map((s) => `<option ${s === v.status ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select></td>
+        <td>${v.link ? `<a href="${esc(v.link)}" target="_blank" rel="noopener">${icone('link')} anúncio</a>` : ''}</td></tr>`).join('')}
+    </tbody></table>`;
+    document.querySelectorAll('select.status').forEach((sel) => sel.addEventListener('change', () => mover(sel.closest('tr').dataset.id, sel.value)));
+  }
+
+  function render() {
+    const total = dados.vagas.length; const ativas = dados.vagas.filter((v) => ['Avaliar', 'Aplicar'].includes(v.status)).length;
+    $('#sub').textContent = total ? `${total} vagas · ${ativas} pra decidir${dados.cargoAlvo ? ` · ${dados.cargoAlvo}` : ''}` : 'nenhuma vaga ainda: rode npm run rodada';
+    $('#quadro').hidden = vista !== 'quadro'; $('#tabela').hidden = vista !== 'tabela';
+    $('#v-quadro').setAttribute('aria-pressed', vista === 'quadro'); $('#v-tabela').setAttribute('aria-pressed', vista === 'tabela');
+    if (vista === 'quadro') renderQuadro(); else renderTabela();
+  }
+
+  $('#v-quadro').addEventListener('click', () => { vista = 'quadro'; render(); });
+  $('#v-tabela').addEventListener('click', () => { vista = 'tabela'; render(); });
+  $('#busca').addEventListener('input', () => { filtro = $('#busca').value.trim().toLowerCase(); render(); });
+  try { vista = localStorage.getItem('quadro-vista') || 'quadro'; } catch {}
+  $('#v-quadro').addEventListener('click', () => { try { localStorage.setItem('quadro-vista', 'quadro'); } catch {} });
+  $('#v-tabela').addEventListener('click', () => { try { localStorage.setItem('quadro-vista', 'tabela'); } catch {} });
+  carregar();
+})();
+</script>
+</body>
+</html>

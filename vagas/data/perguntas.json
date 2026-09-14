@@ -1,0 +1,34 @@
+{
+  "_nota": "Banco de perguntas e respostas de candidatura. Chega vazio. Protocolo: RESPOSTAS.md. Aprovação se aplica ao conteúdo e ao escopo, nunca a qualquer pergunta parecida.",
+  "_como_funciona": [
+    "Ler pergunta, contexto, idioma e alternativas reais.",
+    "Usar resposta direta aprovada somente dentro do escopo e com fonte.",
+    "Resposta contextual exige composição e conferência para aquela candidatura.",
+    "Resposta ausente ou não aprovada não autoriza envio; instrução não é texto de formulário.",
+    "Executar scripts/validar-respostas.mjs e guardar o texto final conforme RESPOSTAS.md."
+  ],
+  "_por_que_vai_no_git": "Como o semantico.json: o custo aqui é você ler e responder cada pergunta uma vez, e isso não se reconstrói rodando de novo.",
+  "_tipos": {
+    "objetiva": "Resposta curta e factual. Vira resposta pronta fácil.",
+    "dissertativa": "Texto livre. Pode virar resposta pronta se for genérica; se citar a empresa, nunca.",
+    "autodeclaracao": "Somente atributo declarado e autorizado por você; fonte privada. Não inferir outros atributos.",
+    "consentimento": "Respeitar escopo da autorização em config/perfil-candidatura.json; opcionais precisam decisão própria."
+  },
+  "_formato_de_cada_entrada": {
+    "pergunta": "o texto exato como apareceu na tela",
+    "normalizada": "chave sem acento, minúscula e sem pontuação, para casar variações da mesma pergunta",
+    "ats": "onde ela apareceu",
+    "campo": "o name do campo no formulário, quando existir",
+    "tipo": "objetiva, dissertativa, autodeclaracao ou consentimento",
+    "resposta": "o que responder. null quer dizer que ninguém respondeu ainda",
+    "aprovada": "false até você conferir. Só true preenche sem parar",
+    "vezes_vista": "quantas vezes apareceu, para saber qual responder primeiro",
+    "primeira_vez": "data",
+    "ultima_vez": "data",
+    "uso": "direta, contextual, pessoal ou documento",
+    "escopo": "contexto para o qual a resposta se aplica: geral, nome da empresa, país, regime ou moeda",
+    "fonte": "origem factual: caminho de arquivo, URL, ou confirmação sua com data"
+  },
+  "atualizadoEm": null,
+  "perguntas": []
+}

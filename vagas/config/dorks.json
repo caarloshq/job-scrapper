@@ -1,0 +1,39 @@
+{
+  "_nota": "Camada 2. A API do Gupy e o employability-portal e ela so lista quem optou pelo portal publico. Vaga que mora so em <empresa>.gupy.io nao aparece. Provado em 2026-07-29: a vaga localiza.gupy.io/jobs/11130005 responde 'Job with ID 11130005 not found' na API do portal.",
+  "_nota_dominios": "Cada dominio aqui PRECISA de um handler em src/busca/extrair-id.js. Sem ele, scripts/enriquecer.mjs devolve [sem id] e descarta 100% do que o dork achou, gastando uma das 3 consultas da rodada para nada. Em 2026-08-28 entraram cinco dominios novos sem esse handler e sairam no mesmo dia, na revisao: estao em _sites_sem_extrator, esperando o extrator.",
+  "sites": [
+    "gupy.io",
+    "inhire.app",
+    "jobs.ashbyhq.com",
+    "job-boards.greenhouse.io",
+    "jobs.lever.co",
+    "jobs.recrutei.com.br"
+  ],
+  "termos": [
+    "(\"product designer\" OR \"designer de produto\" OR \"ux designer\") (senior OR sênior OR pleno)",
+    "\"product designer\" senior",
+    "\"designer de produto\" senior",
+    "\"ux designer\" senior"
+  ],
+  "_nota_termos": "O primeiro termo usa OR de proposito. Com teto de 3 consultas por rodada, uma consulta com OR cobre o que antes exigia tres. Os tres seguintes ficam como reserva para quando o buscador nao respeitar o OR.",
+  "max_consultas_por_rodada": 3,
+  "limite_palavras_consulta": 32,
+  "limite_caracteres_consulta": 2024,
+  "_nota_limite_consulta": "Teto do Google, e ele corta em silencio o que passa. Aplicado em src/busca/ddg.js na montagem da consulta.",
+  "_nota_limite": "O DuckDuckGo entrega nas 2-3 primeiras consultas e depois rate-limita. Medido em 2026-07-30: com 16 configuradas ele bloqueava na terceira e a camada 2 devolvia 0 parecendo 'nao achou nada'. Com 3 e pausa longa, rende. O caminho confiavel e o WebSearch do Claude via scripts/enriquecer.mjs.",
+  "_sites_sem_extrator": {
+    "_nota": "O dork acha vaga nestes dominios, mas extrair-id.js nao sabe tirar o id da URL, entao a camada 2 nao consegue ingerir. Mover para 'sites' SO depois de escrever o handler, e o handler so se escreve depois de abrir uma URL real e ler a forma dela: caminho adivinhado nao prova nada, e id errado estraga o dedupe em silencio.",
+    "com_api_no_ats_js": [
+      "apply.workable.com",
+      "jobs.smartrecruiters.com"
+    ],
+    "sem_coletor_nenhum": [
+      "myworkdayjobs.com",
+      "jobs.bamboohr.com",
+      "careers.icims.com",
+      "jobs.jobvite.com",
+      "apply.jazz.co"
+    ],
+    "_prioridade": "Os dois de cima valem mais: o ats.js JA tem API de Workable e SmartRecruiters, entao o handler destrava tanto a camada 2 quanto a descoberta de empresa do scripts/descobrir-empresas.mjs."
+  }
+}

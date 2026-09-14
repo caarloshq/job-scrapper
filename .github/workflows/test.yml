@@ -1,0 +1,40 @@
+name: testes
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  radar:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: vagas
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Testes do radar, sem rede
+        run: npm test
+      - name: Nenhum dado pessoal em arquivo versionável
+        run: npm run checar:publico
+
+  curriculo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Dependências do gerador de PDF
+        run: pip install reportlab pypdf python-docx
+      - name: Testes do currículo
+        run: python3 -m unittest discover -s Skills/adapt-resume/tests -p "test_*.py"
+      - name: O exemplo gera e passa no verificador, nos dois idiomas
+        working-directory: Skills/adapt-resume
+        run: |
+          python3 generate_resume.py base_content_pt.json /tmp/pt.pdf
+          python3 verificar_resume.py /tmp/pt.pdf base_content_pt.json
+          python3 generate_resume.py base_content_en.json /tmp/en.pdf
+          python3 verificar_resume.py /tmp/en.pdf base_content_en.json

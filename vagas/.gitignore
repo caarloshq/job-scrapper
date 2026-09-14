@@ -1,0 +1,24 @@
+# O cache e os relatorios sao reconstruiveis: uma rodada refaz tudo em 2 minutos.
+data/*
+!data/.gitkeep
+.env
+node_modules/
+
+# EXCECAO: o julgamento semantico NAO e reconstruivel. Os 60 pontos
+# deterministicos o robo recalcula; os 40 semanticos custam alguem ler a vaga
+# inteira contra o curriculo. Este arquivo e a unica coisa aqui que vale mais
+# que o tempo de uma rodada, entao ele viaja no git.
+!data/semantico.json
+
+# EXCECAO: o saldo de debito/credito de candidaturas tambem nao e
+# reconstruivel — e um ledger que so anda pra frente entre sessoes.
+!data/candidaturas.json
+
+# EXCECAO: o banco de perguntas de formulario. O custo aqui e voce ler e
+# responder cada pergunta uma vez; rodar de novo nao reconstroi isso.
+!data/perguntas.json
+
+# EXCECAO: o quadro e o estado e o historico de cada vaga. Nao se reconstroi.
+# As copias diarias ficam em data/backups/, fora do git (sao seguranca local).
+!data/quadro.json
+

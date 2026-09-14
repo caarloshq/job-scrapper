@@ -1,0 +1,107 @@
+{
+  "name": "Ana Beatriz Souza (EXEMPLO, substitua pelos seus dados no bloco 3 do ONBOARDING.md)",
+  "headline": "Desenvolvedora Front-End Sênior | Produtos B2B | React · Design Systems · IA",
+  "contact1": "Curitiba, Paraná, Brasil · +55 (41) 9 0000-0000 · exemplo@email.com",
+  "contact2": "linkedin.com/in/exemplo · github.com/exemplo",
+  "labels": {
+    "summary": "Resumo",
+    "skills": "Competências e Ferramentas",
+    "skills_prefix": "Competências:",
+    "tools_prefix": "Ferramentas e Métodos:",
+    "experience": "Experiência Profissional",
+    "education": "Formação",
+    "certifications": "Certificações e Prêmios",
+    "award_prefix": "Prêmio:",
+    "languages": "Idiomas",
+    "volunteer": "Voluntariado"
+  },
+  "summary": "Desenvolvedora Front-End com 6 anos de experiência, em Curitiba. Nos últimos 2 anos, liderou a reconstrução do painel B2B da NimbusTech, uma plataforma de gestão de estoque para redes de varejo, do zero, hoje usada por mais de 400 lojas. Estruturou a biblioteca de componentes da empresa e integrou IA generativa ao fluxo de desenvolvimento. Antes disso, atuou na Loja Rápida, e-commerce de médio porte. Seu trabalho abrange React, TypeScript, Design Systems e colaboração próxima com produto e design.",
+  "core_skills": [
+    "Front-end ponta a ponta para produtos B2B, do protótipo à entrega em produção",
+    "Biblioteca de componentes e Design System construídos do zero para padronizar times",
+    "Fluxo AI-native com GitHub Copilot para acelerar entrega e revisão de código",
+    "Mentoria técnica e revisão de código para elevar o padrão do time",
+    "Colaboração próxima com produto e design para transformar requisito em interface"
+  ],
+  "skills_line": "React · TypeScript · Design Systems · Testes Automatizados · Acessibilidade · Performance Web · Mentoria Técnica · Inteligência Artificial (IA)",
+  "tools_line": "React · TypeScript · Figma · GitHub Copilot · Storybook · Jest · Vite",
+  "numeros_travados": [
+    "400 lojas",
+    "tempo de carregamento em 60%",
+    "35% para 78%",
+    "90% de cobertura"
+  ],
+  "regras_extra": [
+    "Cargo atual = Desenvolvedora Front-End Sênior.",
+    "O bullet de mentoria é sempre o último da NimbusTech."
+  ],
+  "nunca_citar": [],
+  "experience": [
+    {
+      "role": "Desenvolvedora Front-End Sênior",
+      "company": "NimbusTech",
+      "dates": "Março de 2023 até hoje",
+      "desc": "Plataforma de gestão de estoque para redes de varejo, hoje usada por mais de 400 lojas em todo o país.",
+      "bullets": [
+        "Entrei na NimbusTech quando o painel B2B era um protótipo interno e liderei a reconstrução completa do zero, hoje em produção em mais de 400 lojas.",
+        "Estruturei a biblioteca de componentes e o Design System da plataforma, reduzindo o tempo de desenvolvimento de novas telas pela metade.",
+        "Otimizei o carregamento inicial do painel, reduzindo o tempo de carregamento em 60% através de code-splitting e cache de dados.",
+        "Redesenhei o fluxo de cadastro de produtos, elevando a taxa de conclusão de 35% para 78% em dois meses.",
+        "Integrei GitHub Copilot ao fluxo de desenvolvimento do time, com guidelines de revisão que mantiveram 90% de cobertura de testes automatizados.",
+        "Fiz mentoria técnica de três desenvolvedores júnior, revisando código e conduzindo sessões semanais de pareamento."
+      ],
+      "bullets_temas": [
+        [
+          "zero-a-um",
+          "b2b"
+        ],
+        [
+          "design-system"
+        ],
+        [
+          "metricas"
+        ],
+        [
+          "onboarding",
+          "metricas"
+        ],
+        [
+          "ia"
+        ],
+        [
+          "lideranca"
+        ]
+      ]
+    },
+    {
+      "role": "Desenvolvedora Front-End Plena",
+      "company": "Loja Rápida",
+      "dates": "Janeiro de 2021 a Fevereiro de 2023",
+      "desc": "E-commerce de médio porte com foco em moda, atendendo consumidores finais em todo o Sul do Brasil.",
+      "bullets": [
+        "Conduzi testes de usabilidade no fluxo de checkout que orientaram o redesign, reduzindo o abandono de carrinho.",
+        "Desenvolvi componentes reutilizáveis em React para o catálogo de produtos, usado em toda a plataforma."
+      ],
+      "bullets_temas": [
+        [
+          "research"
+        ],
+        [
+          "design-system"
+        ]
+      ]
+    }
+  ],
+  "education": [
+    [
+      "Universidade Exemplo",
+      "Ciência da Computação",
+      "2015 a 2019"
+    ]
+  ],
+  "certifications": "",
+  "award": "",
+  "languages": "Português (Nativo)",
+  "volunteer": [],
+  "incluir_voluntariado": false
+}

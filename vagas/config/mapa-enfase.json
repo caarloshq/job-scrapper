@@ -1,0 +1,18 @@
+{
+  "_nota": "Baldes tematicos, genericos por profissao. Os gatilhos dizem quando um tema foi aceso na vaga; quais bullets aparecem vem do base_content_*.json de quem esta rodando (campo bullets_temas por experiencia), nunca daqui. Isso e o que deixa este arquivo igual para qualquer pessoa.",
+  "_regra": "Realcar so o que JA e verdade no base_content de quem roda. Nunca adicionar o que a pessoa nao tem.",
+
+  "baldes": [
+    { "id": "design-system", "gatilhos": ["design system", "component library", "token", "biblioteca de componentes", "componentizacao"] },
+    { "id": "research", "gatilhos": ["research", "discovery", "usabilidade", "usability", "user testing", "entrevista", "pesquisa"] },
+    { "id": "design-ops", "gatilhos": ["design ops", "designops", "processo", "documentacao", "handoff", "operacao de design"] },
+    { "id": "fintech", "gatilhos": ["fintech", "credito", "regulado", "compliance", "banking", "banco", "investimento", "cvm", "seguro", "pagamento", "risco sacado", "supply chain finance", "emprestimo", "financiamento"] },
+    { "id": "zero-a-um", "gatilhos": ["0 to 1", "from scratch", "do zero", "early stage", "scale-up", "primeiros", "construir do zero"] },
+    { "id": "ia", "gatilhos": ["ai", "ia", "ai-native", "prompt", "llm", "inteligencia artificial", "copilot", "generativa"] },
+    { "id": "b2b", "gatilhos": ["b2b", "saas", "dashboard", "plataforma", "backoffice", "painel"] },
+    { "id": "metricas", "gatilhos": ["conversao", "growth", "metrica", "data-driven", "orientado a dados", "resultado", "impacto"] },
+    { "id": "onboarding", "gatilhos": ["onboarding", "cadastro", "ativacao", "signup"] },
+    { "id": "lideranca", "gatilhos": ["lideranca", "lead", "po", "product owner", "stakeholder", "mentoria", "referencia tecnica"] },
+    { "id": "mobile", "gatilhos": ["mobile", "app", "ios", "android", "aplicativo"] }
+  ]
+}

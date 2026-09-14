@@ -1,0 +1,19 @@
+{
+  "_nota": "A busca do LinkedIn que a Apify roda por nós. Sem APIFY_TASK no .env, o código dispara o Actor abaixo direto com este arquivo como input; com APIFY_TASK, a Task da sua conta manda e este arquivo é ignorado. O onboarding (bloco 4) escreve `busca.keywords` a partir da sua profissão.",
+  "actor": "hKByXkMQaC5Qt9UMN",
+  "_nota_actor": "curious_coder/linkedin-jobs-scraper. Medido em 2026-09-14 com a mesma busca (Brasil, remoto, 7 dias, 50 vagas): custa US$ 0,10 por rodada, e não marca vaga sênior como 'Entry level', que o filtro descartaria como júnior. Não traz prazo (validThrough) nem tipo de candidatura.",
+  "memoria_mb": 512,
+  "timeout_s": 480,
+  "busca": {
+    "_nota": "Vira a URL de busca do LinkedIn (src/fontes/apify.js → montarUrlBusca). `keywords` é o texto da caixa de busca; `location` e `geoId` são OBRIGATÓRIOS juntos: sem eles o LinkedIn devolveu 100 de 100 vagas nos EUA num teste, e o filtro aprovou 97 porque não enxerga restrição de país no texto. Pegue o geoId de outro país copiando uma URL de busca do próprio LinkedIn. `dias` limita a idade do anúncio; `remoto` liga o filtro Remote do LinkedIn, que é também o que o código lê para marcar a vaga como remota.",
+    "keywords": "ui or ux senior Product Designer contract or full-time or part-time remote",
+    "location": "Brazil",
+    "geoId": "106057199",
+    "remoto": true,
+    "dias": 7
+  },
+  "limite_por_busca": 100,
+  "_nota_limite": "Vagas por rodada. O Actor cobra por vaga coletada: a partir de US$ 2 por 1.000 resultados: 100 vagas custam cerca de US$ 0,20.",
+  "enriquecer_empresa": true,
+  "_nota_enriquecer": "Puxa a página da empresa junto. Custa um pouco mais e rende nome de empresa limpo, que o dedupe usa."
+}

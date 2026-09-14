@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caça-vagas · Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAFA; --surface: #FFFFFF; --surface-2: #F3F5FB;
+    --border: #E5E5E5; --border-strong: #C7C7C7;
+    --text: #0D0D0D; --text-2: #464646; --text-3: #707070;
+    --accent: #1E3FD1; --accent-hover: #1633AB; --accent-soft: #CAD6FF; --accent-deep: #000766;
+    --ok: #0E7A4A; --ok-soft: #DCF3E7; --warn: #8A5A00; --warn-soft: #FFF1CC; --error: #B3261E; --error-soft: #FBE3E1;
+    --r: 4px; --r-control: 8px; --r-card: 16px;
+    --font: Montserrat, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { color-scheme: light; scrollbar-gutter: stable; overflow-y: scroll; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 400 16px/24px var(--font); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 40px 24px 128px; }
+  header.top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+  header.top .nome { font-weight: 600; font-size: 16px; }
+  header.top .local { font: 400 14px/20px var(--mono); color: var(--text-3); }
+
+  ol.passos { list-style: none; margin: 24px 0 0; padding: 0; display: flex; gap: 6px; }
+  ol.passos li { flex: 1; height: 4px; border-radius: 9999px; background: var(--border); position: relative; overflow: hidden; }
+  ol.passos li::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform .3s cubic-bezier(0.16, 1, 0.3, 1), background .2s; }
+  ol.passos li.atual::after { transform: scaleX(1); }
+  ol.passos li.feito::after { transform: scaleX(1); background: var(--accent-soft); }
+  ol.passos li span { position: absolute; left: -9999px; }
+  .passo-rotulo { margin-top: 12px; font: 500 14px/20px var(--font); color: var(--text-3); }
+  .passo-rotulo b { color: var(--accent); font-weight: 500; }
+
+  section.tela { display: none; }
+  section.tela.ativa { display: block; animation: entrar .28s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  section.tela.ativa.voltando { animation-name: entrar-esq; }
+  @keyframes entrar { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @keyframes entrar-esq { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  @keyframes subir { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @keyframes marcar { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+  h1, h2 { font: 600 24px/32px var(--font); letter-spacing: -0.01em; margin: 56px 0 8px; }
+  p.lead { color: var(--text-2); margin: 0 0 40px; }
+  p { margin: 0 0 16px; }
+  .grupo { margin: 0 0 40px; }
+  label.rotulo { display: block; font: 500 14px/20px var(--font); margin: 0 0 8px; }
+  .ajuda { display: block; font: 400 14px/20px var(--font); color: var(--text-3); margin: 8px 0 0; }
+  .ajuda.erro { color: var(--error); }
+  input[type=text], input[type=number], input[type=password], input[type=url], select, textarea {
+    width: 100%; height: 44px; padding: 0 12px; border: 1px solid var(--border-strong); border-radius: var(--r-control);
+    background: var(--surface); color: var(--text); font: 400 16px/24px var(--font); transition: border-color .15s, box-shadow .15s;
+  }
+  textarea { height: auto; min-height: 120px; padding: 10px 12px; resize: vertical; line-height: 24px; }
+  input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
+  input.invalido { border-color: var(--error); }
+  .campos { display: grid; gap: 16px; }
+  .campos.duas { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 520px) { .campos.duas { grid-template-columns: 1fr; } }
+
+  .opcoes { display: grid; gap: 8px; }
+  .opcao { display: block; border: 1px solid var(--border-strong); border-radius: var(--r-control); padding: 12px 16px; background: var(--surface); cursor: pointer; transition: border-color .15s, background .15s, transform .12s; }
+  .opcao:active { transform: scale(.99); }
+  .opcao:hover { border-color: var(--text-3); }
+  .opcao:has(input:checked) { border-color: var(--accent); background: var(--surface-2); }
+  .opcao:has(input:focus-visible) { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
+  .opcao input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .opcao .t { display: block; font-weight: 500; }
+  .opcao .d { display: block; font: 400 14px/20px var(--font); color: var(--text-2); }
+  .opcoes.linha { grid-template-columns: repeat(auto-fit, minmax(136px, 1fr)); }
+  .opcoes.linha .t { white-space: nowrap; }
+
+  .zona { display: block; border: 1.5px dashed var(--border-strong); border-radius: var(--r-card); padding: 24px; text-align: center; background: var(--surface); transition: border-color .15s, background .15s; cursor: pointer; }
+  .zona.sobre { border-color: var(--accent); background: var(--surface-2); }
+  .zona strong { display: block; font-weight: 500; }
+  .zona span { color: var(--text-3); font-size: 14px; line-height: 20px; }
+  .zona input { display: none; }
+  ul.arquivos { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 8px; }
+  ul.arquivos li { animation: subir .22s cubic-bezier(0.16, 1, 0.3, 1) both; display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--r-control); background: var(--surface); font-size: 14px; line-height: 20px; }
+  ul.arquivos li .n { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  ul.arquivos li .s { color: var(--text-3); }
+
+  .tag { display: inline-block; padding: 0 10px; border-radius: 9999px; background: var(--accent-soft); color: var(--accent-deep); font: 500 14px/20px var(--font); vertical-align: middle; }
+  .tag.ok { background: var(--ok-soft); color: var(--ok); }
+  .tag.neutra { background: var(--surface-2); color: var(--text-2); }
+
+  .aviso { border-radius: var(--r-control); padding: 12px 16px; font-size: 14px; line-height: 20px; margin: 0 0 16px; }
+  .aviso.info { background: var(--surface-2); color: var(--text-2); }
+  .aviso.atencao { background: var(--warn-soft); color: var(--warn); }
+  .aviso.erro { background: var(--error-soft); color: var(--error); }
+  .aviso.ok { background: var(--ok-soft); color: var(--ok); }
+
+  .acoes { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); border-top: 1px solid var(--border); }
+  .acoes-inner { max-width: 640px; margin: 0 auto; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: var(--r-control); font: 500 16px/24px var(--font); cursor: pointer; border: 1px solid transparent; transition: background .15s, border-color .15s, transform .12s; text-decoration: none; }
+  .btn:active { transform: scale(.98); }
+  .btn.primario .ic { transition: transform .2s cubic-bezier(0.16, 1, 0.3, 1); }
+  .btn.primario:hover .ic { transform: translateX(2px); }
+  .btn.primario { background: var(--accent); color: #fff; }
+  .btn.primario:hover { background: var(--accent-hover); }
+  .btn.secundario { background: var(--surface); color: var(--text); border-color: var(--border-strong); }
+  .btn.secundario:hover { border-color: var(--text-3); }
+  .btn:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
+  .btn[disabled] { opacity: .4; pointer-events: none; }
+  .btn.pequeno { height: 32px; padding: 0 12px; font-size: 14px; }
+  .salvo { font: 400 14px/20px var(--font); color: var(--text-3); animation: subir .2s ease-out both; }
+  .aviso { animation: subir .22s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  section[data-passo="8"] .ic-titulo { animation: marcar .5s cubic-bezier(0.16, 1, 0.3, 1) .1s both; }
+
+  code, .mono { font: 400 14px/20px var(--mono); }
+  pre { margin: 0 0 16px; padding: 12px 16px; background: #0D0D0D; color: #FAFAFA; border-radius: var(--r-control); overflow-x: auto; font: 400 14px/20px var(--mono); }
+  figure { margin: 0 0 24px; }
+  figure img { display: block; width: 100%; max-width: 100%; border: 1px solid var(--border); border-radius: var(--r-control); }
+  figcaption { font-size: 14px; line-height: 20px; color: var(--text-2); margin-top: 8px; }
+  .prints { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
+  .prints figure:last-child { grid-column: 1 / -1; }
+  @media (max-width: 520px) { .prints { grid-template-columns: 1fr; } }
+
+  table.resumo { width: 100%; border-collapse: collapse; margin: 0 0 40px; font-size: 14px; line-height: 20px; }
+  table.resumo th, table.resumo td { text-align: left; padding: 10px 0; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.resumo th { font-weight: 500; color: var(--text-3); width: 40%; }
+  .toggle { display: flex; align-items: center; gap: 16px; padding: 16px; border: 1px solid var(--border-strong); border-radius: var(--r-control); background: var(--surface); }
+  .toggle input { width: 20px; height: 20px; margin: 0; accent-color: var(--accent); flex: none; }
+  .toggle .t { font-weight: 500; }
+  .toggle .d { font-size: 14px; line-height: 20px; color: var(--text-2); }
+  .visually-hidden { position: absolute; left: -9999px; }
+  .ic { flex: none; vertical-align: middle; }
+  .ic-titulo { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: var(--r-control); background: var(--accent-soft); color: var(--accent-deep); vertical-align: middle; margin-right: 10px; }
+  h1 .ic-titulo, h2 .ic-titulo { position: relative; top: -2px; }
+  .ic-zona { display: block; color: var(--accent); margin: 0 auto 8px; width: 24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="nome">Caça-vagas</div>
+    <div class="local">localhost · nada sai da sua máquina</div>
+  </header>
+
+  <ol class="passos" id="passos" aria-label="Passos do onboarding"></ol>
+  <div class="passo-rotulo" id="passo-rotulo"></div>
+
+  <!-- 1 -->
+  <section class="tela" data-passo="1">
+    <h1>Quem é você e o que está buscando</h1>
+    <p class="lead">O sistema chega configurado pra outra pessoa. Estas respostas viram a sua configuração, gravada aqui na sua máquina.</p>
+    <div class="grupo campos">
+      <div>
+        <label class="rotulo" for="nome">Seu nome</label>
+        <input type="text" id="nome" autocomplete="name" maxlength="200" placeholder="Como aparece no seu currículo">
+      </div>
+      <div>
+        <label class="rotulo" for="cargo">Cargo que você está buscando</label>
+        <input type="text" id="cargo" maxlength="200" placeholder="Ex.: Senior Product Designer, Engenheira de Dados">
+        <span class="ajuda">Como aparece nos anúncios. É o que vai na busca do LinkedIn.</span>
+      </div>
+      <div>
+        <label class="rotulo" for="pais">País onde você mora</label>
+        <select id="pais"></select>
+        <span class="ajuda">Os portais "nacionais" do sistema são do Brasil. Quem mora fora escolhe mercado internacional no próximo passo.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="tela" data-passo="2">
+    <h2>Nacional, internacional ou os dois?</h2>
+    <p class="lead">Esta resposta liga e desliga fontes, decide o idioma do seu currículo base, e pesa na nota de cada vaga.</p>
+    <div class="grupo opcoes" role="radiogroup" aria-label="Mercado">
+      <label class="opcao"><input type="radio" name="foco" value="nacional"><span class="t">🇧🇷 Nacional</span><span class="d">Só portais brasileiros. Currículo base em português.</span></label>
+      <label class="opcao"><input type="radio" name="foco" value="internacional"><span class="t">🌎 Internacional</span><span class="d">Só fontes internacionais e ATS direto. Currículo base em inglês.</span></label>
+      <label class="opcao"><input type="radio" name="foco" value="ambos"><span class="t">🌐 Os dois</span><span class="d">Tudo ligado. Você escolhe qual sobe na nota; o outro entra com desconto, nunca é descartado.</span></label>
+    </div>
+    <div class="grupo" id="prioridade-grupo" hidden>
+      <label class="rotulo">Qual você prioriza?</label>
+      <div class="opcoes linha" role="radiogroup" aria-label="Prioridade">
+        <label class="opcao"><input type="radio" name="prioridade" value="nacional"><span class="t">🇧🇷 Nacional</span></label>
+        <label class="opcao"><input type="radio" name="prioridade" value="internacional"><span class="t">🌎 Internacional</span></label>
+      </div>
+      <span class="ajuda">A vaga do outro mercado entra com 6 pontos a menos numa escala de 100. O currículo base nasce no idioma do prioritário, e depois no outro.</span>
+    </div>
+    <div class="aviso info">O piso de salário continua em reais, e vaga em dólar ou euro é convertida por um câmbio simples só pra comparar ordem de grandeza. As fontes internacionais deixam passar vaga que aceita candidato da América Latina.</div>
+  </section>
+
+  <!-- 3 -->
+  <section class="tela" data-passo="3">
+    <h2>Seu currículo e seu LinkedIn</h2>
+    <p class="lead">É daqui que o agente monta o seu currículo base, sem inventar nada. Quanto mais material, menos perguntas depois.</p>
+    <div class="grupo">
+      <label class="rotulo">Seu currículo <span class="tag neutra" id="cv-estado">PDF</span></label>
+      <label class="zona" data-tipo="curriculo">
+        <input type="file" accept=".pdf,application/pdf">
+        <strong>Arraste o PDF do currículo, ou clique pra escolher</strong>
+        <span>O mais atual que você tiver. Até 15 MB.</span>
+      </label>
+      <ul class="arquivos" id="lista-curriculo"></ul>
+    </div>
+    <div class="grupo">
+      <label class="rotulo">Seu LinkedIn <span class="tag neutra" id="li-estado">opcional</span></label>
+      <label class="zona" data-tipo="linkedin">
+        <input type="file" accept=".pdf,application/pdf">
+        <strong>Arraste o PDF do perfil, ou clique pra escolher</strong>
+        <span>No seu perfil do LinkedIn: "Mais" → "Salvar como PDF". Traz o histórico completo de experiências.</span>
+      </label>
+      <ul class="arquivos" id="lista-linkedin"></ul>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="tela" data-passo="4">
+    <h2>Sua profissão e senioridade</h2>
+    <p class="lead">Os termos de busca chegam configurados pra design. O agente reescreve pra sua área a partir do que você disser aqui.</p>
+    <div class="grupo campos">
+      <div>
+        <label class="rotulo" for="profissao">Sua área, em uma frase</label>
+        <input type="text" id="profissao" maxlength="200" placeholder="Ex.: engenharia de dados, com foco em pipelines e SQL">
+        <span class="ajuda">O agente pesquisa como as vagas dessa área são anunciadas e reescreve os termos de busca.</span>
+      </div>
+      <div>
+        <label class="rotulo">Níveis que você aceita</label>
+        <div class="opcoes linha" id="niveis">
+          <label class="opcao"><input type="checkbox" name="nivel" value="junior"><span class="t">Júnior</span></label>
+          <label class="opcao"><input type="checkbox" name="nivel" value="pleno" checked><span class="t">Pleno</span></label>
+          <label class="opcao"><input type="checkbox" name="nivel" value="senior" checked><span class="t">Sênior</span></label>
+          <label class="opcao"><input type="checkbox" name="nivel" value="lideranca" checked><span class="t">Liderança</span></label>
+        </div>
+        <span class="ajuda">Estágio e trainee ficam sempre de fora.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="tela" data-passo="5">
+    <h2>Salário e limites</h2>
+    <p class="lead">Dois números que decidem o que entra e o que sai.</p>
+    <div class="grupo campos duas">
+      <div>
+        <label class="rotulo" for="piso">Piso mensal, em reais</label>
+        <input type="number" id="piso" min="0" step="100" placeholder="8000">
+        <span class="ajuda">Abaixo disso a vaga é descartada, só quando o anúncio diz valor e período.</span>
+      </div>
+      <div>
+        <label class="rotulo" for="referencia">O que você ganha hoje, por mês</label>
+        <input type="number" id="referencia" min="0" step="100" placeholder="12000">
+        <span class="ajuda">Vaga de nível abaixo só conta como sênior se pagar acima disso.</span>
+      </div>
+    </div>
+    <div class="grupo campos">
+      <div>
+        <label class="rotulo">Modelo de trabalho que você aceita</label>
+        <div class="opcoes linha" id="modelos">
+          <label class="opcao"><input type="checkbox" name="modelo" value="remoto" checked><span class="t">🏠 Remoto</span></label>
+          <label class="opcao"><input type="checkbox" name="modelo" value="hibrido"><span class="t">🏢 Híbrido</span></label>
+          <label class="opcao"><input type="checkbox" name="modelo" value="presencial"><span class="t">📍 Presencial</span></label>
+        </div>
+        <span class="ajuda">Remoto vale em qualquer lugar. Híbrido e presencial só entram na sua cidade.</span>
+      </div>
+      <div id="cidade-grupo" hidden>
+        <label class="rotulo" for="cidade">Sua cidade</label>
+        <input type="text" id="cidade" autocomplete="address-level2" placeholder="Como aparece nos anúncios, ex.: Curitiba">
+        <span class="ajuda">Vaga híbrida ou presencial que não cita esta cidade fica de fora.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="tela" data-passo="6">
+    <h2>Candidatura automática</h2>
+    <p class="lead">O sistema sabe preencher formulário de vaga no navegador, com respostas que você aprova uma a uma. Isso chega desligado.</p>
+    <div class="grupo">
+      <label class="toggle">
+        <input type="checkbox" id="autorizado">
+        <span><span class="t">Ligar a candidatura automática</span><br><span class="d">Só liga de verdade depois que você preencher o perfil de candidatura com o agente. Enquanto isso, ele prepara currículo e rascunho, e quem envia é você.</span></span>
+      </label>
+    </div>
+    <div class="aviso info">"Desligado" é a resposta padrão e não atrapalha nada. Dá pra ligar depois.</div>
+  </section>
+
+  <!-- 7 -->
+  <section class="tela" data-passo="7">
+    <h2>A Apify, por último</h2>
+    <p class="lead">O LinkedIn não deixa programa nenhum coletar vaga direto. Quem coleta por nós é um serviço na Apify, pago por vaga: a partir de US$ 2 por 1.000, cerca de US$ 0,20 por rodada de 100 vagas. É a fonte que mais rende.</p>
+    <div class="grupo">
+      <p>1. Crie uma conta em <a href="https://apify.com" target="_blank" rel="noopener">apify.com</a>. O plano gratuito serve pra começar.</p>
+      <p>2. Abra a página do coletor de vagas do LinkedIn na Apify: <a href="https://console.apify.com/actors/hKByXkMQaC5Qt9UMN/input" target="_blank" rel="noopener">console.apify.com/actors/hKByXkMQaC5Qt9UMN/input</a>.</p>
+      <p>3. Clique em <strong>API</strong>, depois em <strong>API clients</strong>, e use o ícone de copiar ao lado de "API token". Não precisa criar token novo nem usar o código que aparece embaixo.</p>
+      <div class="prints">
+        <figure><img src="img/apify/01-botao-api.webp" alt="Canto superior direito da página do coletor na Apify, com os botões Start, Save as a new task e API"><figcaption>O botão API, no canto superior direito.</figcaption></figure>
+        <figure><img src="img/apify/02-menu-api-clients.webp" alt="Menu do botão API aberto, com a opção API clients em destaque"><figcaption>No menu, API clients.</figcaption></figure>
+        <figure><img src="img/apify/03-api-clients-copiar-token.webp" alt="Janela API clients com o campo API token e o ícone de copiar ao lado"><figcaption>O campo API token já vem preenchido. O ícone ao lado copia.</figcaption></figure>
+      </div>
+    </div>
+    <div class="grupo campos">
+      <div>
+        <label class="rotulo" for="token">Token da Apify <span class="tag" id="token-estado" hidden>presente</span></label>
+        <input type="password" id="token" autocomplete="off" placeholder="apify_api_…">
+        <span class="ajuda" id="token-ajuda">Vai pro arquivo <code>vagas/.env</code>, que está fora do git. Nunca aparece de volta nesta tela.</span>
+      </div>
+    </div>
+    <div class="aviso info">Sem token, tudo o resto funciona. Só o LinkedIn fica de fora.</div>
+  </section>
+
+  <!-- 8 -->
+  <section class="tela" data-passo="8">
+    <h2>Salvo. Agora o agente termina.</h2>
+    <p class="lead">O que você respondeu já está nos arquivos do projeto. Duas coisas o formulário não faz, e é o agente quem faz.</p>
+    <table class="resumo" id="resumo"></table>
+    <div class="grupo">
+      <label class="rotulo" for="instrucao">Instrução pro agente</label>
+      <p>Abra o Claude Code ou o Codex na pasta do projeto e cole isto:</p>
+      <textarea id="instrucao" readonly aria-label="Instrução pro agente" style="min-height:140px;font-size:14px;line-height:20px"></textarea>
+      <div class="acoes-inline" style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+        <button class="btn primario pequeno" type="button" id="copiar">Copiar instrução</button>
+        <a class="btn secundario pequeno" id="baixar" download="onboarding-respostas.md" href="#">Baixar como arquivo</a>
+        <span class="salvo" id="copiado"></span>
+      </div>
+      <span class="ajuda">O arquivo é um resumo do que você respondeu, com a mesma instrução. Serve pra guardar ou colar em outra ferramenta.</span>
+    </div>
+    <div class="aviso ok">Quer mudar alguma resposta? Volte nos passos. Cada tela salva de novo.</div>
+  </section>
+
+  <div class="acoes"><div class="acoes-inner">
+    <button class="btn secundario" id="voltar" type="button">Voltar</button>
+    <span class="salvo" id="salvo-status"></span>
+    <button class="btn primario" id="continuar" type="button">Continuar</button>
+  </div></div>
+</div>
+
+<script>
+(() => {
+  const PASSOS = ['Quem é você', 'Mercado', 'Currículo e LinkedIn', 'Profissão', 'Salário', 'Candidatura automática', 'Apify', 'Pronto'];
+  const PAISES = [
+    ['Brasil', 'Brazil', '106057199'], ['Portugal', 'Portugal', '100364837'], ['Estados Unidos', 'United States', '103644278'],
+    ['Reino Unido', 'United Kingdom', '101165590'], ['Canadá', 'Canada', '101174742'], ['Alemanha', 'Germany', '101282230'],
+    ['Espanha', 'Spain', '105646813'], ['Outro', '', ''],
+  ];
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => [...document.querySelectorAll(s)];
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  let atual = 1;
+  let direcao = 1;
+  let estado = {};
+
+  // ---------- montagem ----------
+
+  // Ícones do Lucide (lucide.dev, ISC), inline pra página não depender de rede.
+  const ICONES = {
+    user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+    globe: '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+    'file-text': '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+    briefcase: '<path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/>',
+    banknote: '<rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>',
+    send: '<path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/>',
+    'key-round': '<path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/>',
+    'check-circle': '<path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/>',
+    upload: '<path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>',
+    copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+    download: '<path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/>',
+    'arrow-left': '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+    'arrow-right': '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+    x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  };
+  const icone = (nome, tam = 20) => `<svg class="ic" width="${tam}" height="${tam}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[nome]}</svg>`;
+  const ICONE_PASSO = ['user', 'globe', 'file-text', 'briefcase', 'banknote', 'send', 'key-round', 'check-circle'];
+  document.querySelectorAll('section.tela').forEach((sec) => {
+    const h = sec.querySelector('h1, h2'); const n = Number(sec.dataset.passo);
+    if (h) h.insertAdjacentHTML('afterbegin', `<span class="ic-titulo">${icone(ICONE_PASSO[n - 1], 18)}</span>`);
+  });
+  $('#voltar').insertAdjacentHTML('afterbegin', icone('arrow-left', 18));
+  $$('.zona strong').forEach((el) => el.insertAdjacentHTML('afterbegin', `<span class="ic-zona">${icone('upload', 24)}</span>`));
+  $('#copiar').insertAdjacentHTML('afterbegin', icone('copy', 16));
+  $('#baixar').insertAdjacentHTML('afterbegin', icone('download', 16));
+  const sel = $('#pais');
+  for (const [rotulo, nome, geo] of PAISES) {
+    const o = document.createElement('option'); o.value = nome || 'outro'; o.dataset.geo = geo; o.textContent = rotulo; sel.appendChild(o);
+  }
+  const ol = $('#passos');
+  PASSOS.forEach((n, i) => { const li = document.createElement('li'); li.innerHTML = `<span>${i + 1}. ${n}</span>`; ol.appendChild(li); });
+
+  function pintarPassos() {
+    $$('#passos li').forEach((li, i) => { li.className = i + 1 < atual ? 'feito' : i + 1 === atual ? 'atual' : ''; });
+    $('#passo-rotulo').innerHTML = `Passo <b>${atual}</b> de ${PASSOS.length} · ${PASSOS[atual - 1]}`;
+    $$('section.tela').forEach((s) => { const on = Number(s.dataset.passo) === atual; s.classList.toggle('ativa', on); s.classList.toggle('voltando', on && direcao < 0); });
+    $('#voltar').disabled = atual === 1;
+    $('#continuar').hidden = false;
+    $('#continuar').innerHTML = (atual === 7 ? 'Salvar e concluir' : atual === 8 ? 'Fechar' : 'Continuar') + (atual < 8 ? icone('arrow-right', 18) : '');
+    $('#salvo-status').textContent = '';
+    window.scrollTo({ top: 0 });
+    if (atual === 8) montarResumo();
+  }
+
+  // ---------- estado vindo do disco ----------
+  async function carregar() {
+    const r = await fetch('/api/estado'); estado = await r.json();
+    const p = estado.perfil || {};
+    $('#nome').value = p.nome || '';
+    $('#cargo').value = p.cargo_alvo || '';
+    if (p.pais) { const op = [...sel.options].find((o) => o.value === p.pais); sel.value = op ? p.pais : 'outro'; }
+    if (p.mercado?.foco) { const r = document.querySelector(`input[name=foco][value=${p.mercado.foco}]`); if (r) r.checked = true; }
+    if (p.mercado?.prioridade) { const r = document.querySelector(`input[name=prioridade][value=${p.mercado.prioridade}]`); if (r) r.checked = true; }
+    atualizarPrioridade();
+    $('#profissao').value = p.profissao || '';
+    if (Array.isArray(p.niveis_aceitos)) $$('input[name=nivel]').forEach((c) => { c.checked = p.niveis_aceitos.includes(c.value); });
+    if (p.salario_confirmado) { $('#piso').value = p.salario?.minimo_mensal_brl ?? ''; $('#referencia').value = p.salario?.referencia_atual_brl ?? ''; }
+    $$('input[name=modelo]').forEach((c) => { c.checked = c.value === 'remoto' ? p.exigir_remoto !== false || p.aceita_hibrido || p.aceita_presencial ? true : true : c.value === 'hibrido' ? p.aceita_hibrido === true : p.aceita_presencial === true; });
+    $('#cidade').value = p.cidade || '';
+    atualizarCidade();
+    $('#autorizado').checked = Boolean(estado.candidatura?.autorizado);
+    if (estado.env?.token) { $('#token-estado').hidden = false; $('#token').placeholder = 'Já salvo. Cole outro só se quiser trocar.'; }
+    renderArquivos();
+  }
+
+  function atualizarPrioridade() {
+    const foco = document.querySelector('input[name=foco]:checked')?.value;
+    $('#prioridade-grupo').hidden = foco !== 'ambos';
+  }
+  $$('input[name=foco]').forEach((r) => r.addEventListener('change', atualizarPrioridade));
+  function atualizarCidade() {
+    const precisa = $$('input[name=modelo]:checked').some((c) => c.value !== 'remoto');
+    $('#cidade-grupo').hidden = !precisa;
+  }
+  $$('input[name=modelo]').forEach((c) => c.addEventListener('change', atualizarCidade));
+
+  // ---------- arquivos: um PDF por tipo ----------
+  const pendentes = { curriculo: null, linkedin: null };
+  for (const zona of $$('.zona')) {
+    const tipo = zona.dataset.tipo; const input = zona.querySelector('input');
+    ['dragenter', 'dragover'].forEach((e) => zona.addEventListener(e, (ev) => { ev.preventDefault(); zona.classList.add('sobre'); }));
+    ['dragleave', 'drop'].forEach((e) => zona.addEventListener(e, (ev) => { ev.preventDefault(); zona.classList.remove('sobre'); }));
+    zona.addEventListener('drop', (ev) => escolherArquivo(tipo, ev.dataTransfer.files[0]));
+    input.addEventListener('change', () => { escolherArquivo(tipo, input.files[0]); input.value = ''; });
+  }
+  function escolherArquivo(tipo, f) {
+    if (!f) return;
+    if (!/\.pdf$/i.test(f.name)) { avisoArquivo(tipo, `${f.name} não é PDF. Salve como PDF e tente de novo.`); return; }
+    if (f.size > 15 * 1024 * 1024) { avisoArquivo(tipo, `${f.name} passa de 15 MB. Comprima o PDF ou tire páginas.`); return; }
+    avisoArquivo(tipo, '');
+    pendentes[tipo] = f;
+    renderArquivos();
+  }
+  function avisoArquivo(tipo, msg) {
+    const lista = $(`#lista-${tipo}`);
+    let av = lista.parentElement.querySelector('.aviso.atencao');
+    if (!msg) { if (av) av.remove(); return; }
+    if (!av) { av = document.createElement('div'); av.className = 'aviso atencao'; av.style.marginTop = '16px'; lista.after(av); }
+    av.textContent = msg;
+  }
+  function tamanho(b) { return b > 1024 * 1024 ? `${(b / 1048576).toFixed(1)} MB` : `${Math.round(b / 1024)} KB`; }
+  function renderArquivos() {
+    for (const tipo of ['curriculo', 'linkedin']) {
+      const ul = $(`#lista-${tipo}`); ul.innerHTML = '';
+      const salvo = (estado.materiais || []).find((a) => a.tipo === tipo);
+      const novo = pendentes[tipo];
+      if (novo) {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="tag neutra">novo</span><span class="n">${esc(novo.name)}</span><span class="s">${tamanho(novo.size)}</span><button class="btn secundario pequeno" type="button">${icone('x', 14)}Remover</button>`;
+        li.querySelector('button').addEventListener('click', () => { pendentes[tipo] = null; renderArquivos(); });
+        ul.appendChild(li);
+      } else if (salvo) {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="tag ok">salvo</span><span class="n">${esc(salvo.nome)}</span><span class="s">${salvo.extraido ? 'texto extraído' : tamanho(salvo.tamanho)}</span>`;
+        ul.appendChild(li);
+      }
+      const tag = $(tipo === 'curriculo' ? '#cv-estado' : '#li-estado');
+      if (salvo || novo) { tag.textContent = novo ? 'novo' : 'salvo'; tag.className = 'tag ok'; }
+      else { tag.textContent = tipo === 'curriculo' ? 'PDF' : 'opcional'; tag.className = 'tag neutra'; }
+    }
+  }
+  const paraBase64 = (f) => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(f); });
+
+  // ---------- validação e gravação por passo ----------
+  function marcar(el, ruim, msg) {
+    el.classList.toggle('invalido', ruim);
+    let ajuda = el.parentElement.querySelector('.ajuda.erro');
+    if (ruim) { if (!ajuda) { ajuda = document.createElement('span'); ajuda.className = 'ajuda erro'; el.parentElement.appendChild(ajuda); } ajuda.textContent = msg; }
+    else if (ajuda) ajuda.remove();
+    return !ruim;
+  }
+  const valor = (n) => document.querySelector(`input[name=${n}]:checked`)?.value;
+
+  async function coletarPasso() {
+    if (atual === 1) {
+      const ok1 = marcar($('#nome'), !$('#nome').value.trim(), 'Precisa do seu nome.');
+      const ok2 = marcar($('#cargo'), !$('#cargo').value.trim(), 'Precisa do cargo, como aparece em anúncio.');
+      if (!ok1 || !ok2) return null;
+      const op = sel.selectedOptions[0];
+      return { nome: $('#nome').value.trim(), cargo_alvo: $('#cargo').value.trim(), pais: op.value === 'outro' ? 'outro' : op.value, geoId: op.dataset.geo };
+    }
+    if (atual === 2) {
+      const foco = valor('foco'); const prioridade = valor('prioridade');
+      if (!foco) { $('#salvo-status').textContent = 'Escolha um mercado.'; return null; }
+      if (foco === 'ambos' && !prioridade) { $('#salvo-status').textContent = 'Diga qual você prioriza.'; return null; }
+      return { foco, prioridade: foco === 'ambos' ? prioridade : null };
+    }
+    if (atual === 3) {
+      const temCv = pendentes.curriculo || (estado.materiais || []).some((a) => a.tipo === 'curriculo');
+      if (!temCv) { avisoArquivo('curriculo', 'O currículo em PDF é obrigatório: é dele que o agente monta a sua base.'); return null; }
+      const arquivos = [];
+      for (const tipo of ['curriculo', 'linkedin']) if (pendentes[tipo]) arquivos.push({ tipo, nome: pendentes[tipo].name, base64: await paraBase64(pendentes[tipo]) });
+      return { arquivos };
+    }
+    if (atual === 4) {
+      const ok = marcar($('#profissao'), !$('#profissao').value.trim(), 'Diga a sua área em uma frase.');
+      if (!ok) return null;
+      return { profissao: $('#profissao').value.trim(), niveis_aceitos: $$('input[name=nivel]:checked').map((c) => c.value) };
+    }
+    if (atual === 5) {
+      const piso = Number($('#piso').value); const ref = Number($('#referencia').value);
+      const ok1 = marcar($('#piso'), !(piso > 0), 'Um número maior que zero.');
+      const ok2 = marcar($('#referencia'), !(ref > 0), 'Um número maior que zero.');
+      if (!ok1 || !ok2) return null;
+      const modelos = $$('input[name=modelo]:checked').map((c) => c.value);
+      if (!modelos.length) { $('#salvo-status').textContent = 'Marque ao menos um modelo de trabalho.'; return null; }
+      const precisaCidade = modelos.some((m) => m !== 'remoto');
+      if (precisaCidade && !marcar($('#cidade'), !$('#cidade').value.trim(), 'Híbrido e presencial precisam da sua cidade.')) return null;
+      return { minimo_mensal_brl: piso, referencia_atual_brl: ref, aceita_hibrido: modelos.includes('hibrido'), aceita_presencial: modelos.includes('presencial'), aceita_remoto: modelos.includes('remoto'), cidade: precisaCidade ? $('#cidade').value.trim() : '' };
+    }
+    if (atual === 6) return { autorizado: $('#autorizado').checked };
+    if (atual === 7) return { token: $('#token').value.trim() || null };
+    return {};
+  }
+
+  async function salvar(dados) {
+    $('#continuar').disabled = true; $('#salvo-status').textContent = 'Salvando…';
+    try {
+      const r = await fetch('/api/salvar', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ passo: atual, dados }) });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.erro || 'falhou');
+      estado = j.estado;
+      if (atual === 3) { pendentes.curriculo = null; pendentes.linkedin = null; renderArquivos(); }
+      if (atual === 7) { $('#token').value = ''; if (estado.env?.token) { $('#token-estado').hidden = false; $('#token').placeholder = 'Já salvo. Cole outro só se quiser trocar.'; } }
+      const st = $('#salvo-status'); st.textContent = 'Salvo.'; st.style.animation = 'none'; void st.offsetWidth; st.style.animation = '';
+      return true;
+    } catch (e) {
+      $('#salvo-status').textContent = `Não salvou: ${e.message}`;
+      return false;
+    } finally { $('#continuar').disabled = false; }
+  }
+
+  // Trava contra clique duplo: um toque avança um passo, nunca dois. Sem isto,
+  // um duplo clique num servidor local (que responde em milissegundos) salvava
+  // o passo seguinte com o que estava na tela antes de a pessoa olhar.
+  let ocupado = false;
+  $('#continuar').addEventListener('click', async () => {
+    if (ocupado) return;
+    if (atual === 8) { $('#salvo-status').textContent = 'Tudo salvo. Pode fechar esta aba e parar o servidor com Ctrl+C.'; $('#continuar').hidden = true; return; }
+    ocupado = true;
+    try {
+      const dados = await coletarPasso();
+      if (dados === null) return;
+      if (await salvar(dados)) { direcao = 1; atual++; pintarPassos(); }
+    } finally {
+      setTimeout(() => { ocupado = false; }, 350);
+    }
+  });
+  $('#voltar').addEventListener('click', () => { if (atual > 1) { direcao = -1; atual--; pintarPassos(); } });
+
+  function montarResumo() {
+    const p = estado.perfil || {}; const b = estado.blocos || [];
+    const linhas = [
+      ['Cargo alvo', p.cargo_alvo || ''],
+      ['Mercado', p.mercado?.foco ? `${p.mercado.foco}${p.mercado.prioridade ? `, prioriza ${p.mercado.prioridade}` : ''}` : ''],
+      ['Materiais', (estado.materiais || []).map((a) => a.tipo === 'curriculo' ? 'currículo' : 'LinkedIn').join(' e ') || 'nenhum'],
+      ['Área', p.profissao || ''],
+      ['Piso', p.salario?.minimo_mensal_brl ? `R$ ${p.salario.minimo_mensal_brl} por mês` : ''],
+      ['Modelo', [p.aceita_remoto !== false ? 'remoto' : null, p.aceita_hibrido ? 'híbrido' : null, p.aceita_presencial ? 'presencial' : null].filter(Boolean).join(', ') + (p.cidade ? ` em ${p.cidade}` : '')],
+      ['Candidatura automática', estado.candidatura?.autorizado ? 'ligada, falta o perfil de candidatura' : 'desligada'],
+      ['Apify', estado.env?.token ? (estado.env.task ? 'token e Task salvos' : 'token salvo; busca gravada em config/linkedin.json') : 'sem token: LinkedIn fica de fora'],
+      ['O agente ainda faz', 'montar o currículo base · reescrever os termos de busca · marcar o perfil como configurado'],
+    ];
+    $('#resumo').innerHTML = linhas.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join('');
+
+    const instrucao = [
+      'Quero fazer o onboarding. Já preenchi o formulário: rode `cd vagas && npm run onboarding` e não repergunte o que está ok.',
+      `Sou ${p.nome || 'a pessoa dona deste projeto'}, buscando vaga de ${p.cargo_alvo || '(cargo)'}. Área: ${p.profissao || '(não definida)'}.`,
+      'Falta você: montar meu currículo base a partir de Skills/adapt-resume/materiais-fonte/ (me entreviste antes, sem inventar nada) e reescrever vagas/config/palavras-chave.json pra minha área. Depois `npm run onboarding -- --concluir`.',
+    ].join('\n');
+    $('#instrucao').value = instrucao;
+    const resumoMd = ['# Onboarding do Caça-vagas', '', `Salvo em ${new Date().toLocaleDateString('pt-BR')}.`, '', ...linhas.map(([k, v]) => `- **${k}:** ${v || '(vazio)'}`), '', '## Instrução pro agente', '', '```', instrucao, '```', ''].join('\n');
+    $('#baixar').href = URL.createObjectURL(new Blob([resumoMd], { type: 'text/markdown;charset=utf-8' }));
+  }
+  $('#copiar').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText($('#instrucao').value); $('#copiado').textContent = 'Copiado.'; }
+    catch { $('#instrucao').select(); $('#copiado').textContent = 'Selecionado: use Cmd+C ou Ctrl+C.'; }
+  });
+
+  carregar().catch(() => {
+    estado = {};
+    const av = document.createElement('div'); av.className = 'aviso erro';
+    av.textContent = 'O servidor local não respondeu. No terminal, dentro de vagas/, rode: npm start. Depois recarregue esta página.';
+    document.querySelector('.wrap').insertBefore(av, document.querySelector('#passos'));
+  }).then(pintarPassos);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+{
+  "_nota": "Fatos e autorizações para candidatura. Chega VAZIO de propósito: quem preenche é você, no onboarding, e nada aqui é inventado pelo agente. Consulte RESPOSTAS.md para compor, conferir e registrar o texto. Ausência nas fontes não autoriza resposta negativa.",
+  "_opt_in": "A candidatura automática (RODADA-DIARIA.md §8) só liga com `autorizado: true` abaixo, preenchido por você. Enquanto for false, o agente prepara currículo e rascunho de resposta, mas NÃO abre navegador para preencher nem enviar formulário.",
+  "autorizado": false,
+  "autorizado_em": null,
+  "bloqueio": {
+    "_nota": "Domínios onde você NÃO quer que o agente aplique, mesmo autorizado. Um por linha, ex.: 'linkedin.com'.",
+    "dominios_bloqueados": [],
+    "so_bloqueia_candidatura_simplificada": false,
+    "regra": ""
+  },
+  "identidade": {
+    "_nota": "Só o que um formulário de vaga pede. Documento (CPF, RG, passaporte) NUNCA entra aqui nem em arquivo nenhum do projeto.",
+    "nome_completo": "",
+    "nome_primeiro": "",
+    "nome_do_meio": "",
+    "nome_ultimo_sobrenome": "",
+    "nome_profissional": "",
+    "email": "",
+    "telefone": "",
+    "telefone_pais": "",
+    "linkedin": "",
+    "portfolio": "",
+    "pais": "",
+    "estado": "",
+    "cidade": ""
+  },
+  "profissional": {
+    "cargo_atual": "",
+    "anos_experiencia": null,
+    "anos_na_area_alvo": null,
+    "_nota_anos": "Anos totais de carreira e anos na área que você está buscando são números diferentes. Não some um no outro.",
+    "escolaridade": "",
+    "idiomas": {
+      "_nota": "Nível como você declararia num formulário, ex.: 'B2'. O currículo nunca eleva o nível declarado aqui.",
+      "ingles": "",
+      "espanhol": "",
+      "outro": ""
+    },
+    "open_source": {
+      "conhecimento": "",
+      "contribuicoes": null
+    }
+  },
+  "remuneracao": {
+    "_nota": "Formulário costuma exigir pretensão. Sem estes números o agente para em toda vaga que pergunta.",
+    "pretensao_clt_mensal_brl": null,
+    "pretensao_pj_mensal_brl": null,
+    "pretensao_hora_usd": null,
+    "remuneracao_atual_mensal_brl": null,
+    "aceita_faixa_menor_se_o_resto_compensar": null,
+    "_qual_usar": "Usar o valor do regime que a vaga oferece. Não converter moeda nem período sem critério declarado aqui."
+  },
+  "contratacao": {
+    "aceita_clt": null,
+    "aceita_pj": null,
+    "aceita_cooperativa": null,
+    "disponibilidade_inicio": "",
+    "aceita_hibrido": null,
+    "aceita_presencial": null,
+    "aceita_mudanca_de_cidade": null
+  },
+  "autodeclaracao": {
+    "_nota": "Gênero, raça, deficiência e afins. Null quer dizer 'não responder sozinho'. O agente nunca infere um atributo a partir de outro.",
+    "pode_preencher": false,
+    "_ver": "data/dados-pessoais.json (fora do git)"
+  },
+  "consentimento": {
+    "_nota": "Aceite de privacidade e de diversidade só quando necessário para uma candidatura cujo envio você autorizou.",
+    "marcar_lgpd_automaticamente": false,
+    "somente_candidatura_com_envio_autorizado": true,
+    "opcionais_exigem_decisao": true,
+    "fonte_autorizacao": ""
+  },
+  "perguntas_comuns": {
+    "_nota": "Perguntas que dependem da candidatura ficam null: 'já trabalhou nesta empresa' e 'foi indicado' nunca têm resposta global.",
+    "ja_trabalhou_na_empresa": null,
+    "foi_indicado_por_alguem": null,
+    "possui_disponibilidade_para_viagens": null,
+    "possui_restricao_de_horario": null,
+    "como_conheceu_a_vaga": null
+  },
+  "nunca_responder_sozinho": [
+    "documento (CPF, RG, passaporte)",
+    "autodeclaração (gênero, raça, deficiência)",
+    "pretensão salarial fora dos valores deste arquivo",
+    "vínculo ou parentesco com alguém da empresa",
+    "teste, vídeo ou qualquer etapa que peça sua presença"
+  ],
+  "rascunho": {
+    "_nota": "O que o agente pode rascunhar para você conferir, e o que nunca rascunha.",
+    "pode_rascunhar": [
+      "apresentação livre",
+      "por que esta empresa (com pesquisa e fonte)",
+      "descrição de experiência",
+      "resposta objetiva com fato do currículo"
+    ],
+    "nunca_rascunha": [
+      "opinião pessoal sem fonte",
+      "motivação inventada",
+      "qualquer campo de nunca_responder_sozinho"
+    ],
+    "todo_rascunho_para_e_espera": true,
+    "_nunca_citar": "Mora em um lugar só: base_content.nunca_citar (Skills/adapt-resume/). Verificador do PDF e gerador de instrução leem de lá."
+  },
+  "confirmacoes": {
+    "_nota": "Fatos que você declarou explicitamente, com data e escopo. Ausência no currículo NÃO é confirmação negativa.",
+    "parentesco_com_colaboradores": null
+  }
+}
