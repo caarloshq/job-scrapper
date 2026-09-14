@@ -137,7 +137,7 @@
 <div class="wrap">
   <header class="top">
     <div class="nome">Caça-vagas</div>
-    <div class="local">localhost · nada sai da sua máquina</div>
+    <div class="local">Formulário local · dados salvos neste computador</div>
   </header>
 
   <ol class="passos" id="passos" aria-label="Passos do onboarding"></ol>
@@ -145,8 +145,8 @@
 
   <!-- 1 -->
   <section class="tela" data-passo="1">
-    <h1>Quem é você e o que está buscando</h1>
-    <p class="lead">O sistema chega configurado pra outra pessoa. Estas respostas viram a sua configuração, gravada aqui na sua máquina.</p>
+    <h1>Que vaga você procura?</h1>
+    <p class="lead">Informe seu nome, o cargo desejado e onde mora. Depois do formulário, você vai concluir a configuração com o Claude Code ou o Codex.</p>
     <div class="grupo campos">
       <div>
         <label class="rotulo" for="nome">Seu nome</label>
@@ -167,28 +167,28 @@
 
   <!-- 2 -->
   <section class="tela" data-passo="2">
-    <h2>Nacional, internacional ou os dois?</h2>
-    <p class="lead">Esta resposta liga e desliga fontes, decide o idioma do seu currículo base, e pesa na nota de cada vaga.</p>
+    <h2>Onde você quer procurar vagas?</h2>
+    <p class="lead">Escolha Brasil, exterior ou os dois. Essa escolha também orienta o idioma do seu currículo.</p>
     <div class="grupo opcoes" role="radiogroup" aria-label="Mercado">
-      <label class="opcao"><input type="radio" name="foco" value="nacional"><span class="t">🇧🇷 Nacional</span><span class="d">Só portais brasileiros. Currículo base em português.</span></label>
-      <label class="opcao"><input type="radio" name="foco" value="internacional"><span class="t">🌎 Internacional</span><span class="d">Só fontes internacionais e ATS direto. Currículo base em inglês.</span></label>
-      <label class="opcao"><input type="radio" name="foco" value="ambos"><span class="t">🌐 Os dois</span><span class="d">Tudo ligado. Você escolhe qual sobe na nota; o outro entra com desconto, nunca é descartado.</span></label>
+      <label class="opcao"><input type="radio" name="foco" value="nacional"><span class="t">🇧🇷 Brasil</span><span class="d">Só portais brasileiros. Currículo base em português.</span></label>
+      <label class="opcao"><input type="radio" name="foco" value="internacional"><span class="t">🌎 Exterior</span><span class="d">Busca em sites internacionais. Currículo base em inglês.</span></label>
+      <label class="opcao"><input type="radio" name="foco" value="ambos"><span class="t">🌐 Os dois</span><span class="d">Busca nos dois mercados. Escolha abaixo qual você quer priorizar.</span></label>
     </div>
     <div class="grupo" id="prioridade-grupo" hidden>
       <label class="rotulo">Qual você prioriza?</label>
       <div class="opcoes linha" role="radiogroup" aria-label="Prioridade">
-        <label class="opcao"><input type="radio" name="prioridade" value="nacional"><span class="t">🇧🇷 Nacional</span></label>
-        <label class="opcao"><input type="radio" name="prioridade" value="internacional"><span class="t">🌎 Internacional</span></label>
+        <label class="opcao"><input type="radio" name="prioridade" value="nacional"><span class="t">🇧🇷 Brasil</span></label>
+        <label class="opcao"><input type="radio" name="prioridade" value="internacional"><span class="t">🌎 Exterior</span></label>
       </div>
-      <span class="ajuda">A vaga do outro mercado entra com 6 pontos a menos numa escala de 100. O currículo base nasce no idioma do prioritário, e depois no outro.</span>
+      <span class="ajuda">A preferência ajuda a ordenar as vagas. O assistente prepara primeiro o currículo para o mercado escolhido.</span>
     </div>
-    <div class="aviso info">O piso de salário continua em reais, e vaga em dólar ou euro é convertida por um câmbio simples só pra comparar ordem de grandeza. As fontes internacionais deixam passar vaga que aceita candidato da América Latina.</div>
+    <div class="aviso info">Informe seus valores em reais. A comparação com salários em outras moedas é aproximada. A busca internacional considera vagas que aceitam candidaturas da América Latina.</div>
   </section>
 
   <!-- 3 -->
   <section class="tela" data-passo="3">
     <h2>Seu currículo e seu LinkedIn</h2>
-    <p class="lead">É daqui que o agente monta o seu currículo base, sem inventar nada. Quanto mais material, menos perguntas depois.</p>
+    <p class="lead">Adicione seu currículo mais recente. O assistente usará esse material para preparar uma versão que você poderá conferir.</p>
     <div class="grupo">
       <label class="rotulo">Seu currículo <span class="tag neutra" id="cv-estado">PDF</span></label>
       <label class="zona" data-tipo="curriculo">
@@ -212,12 +212,12 @@
   <!-- 4 -->
   <section class="tela" data-passo="4">
     <h2>Sua profissão e senioridade</h2>
-    <p class="lead">Os termos de busca chegam configurados pra design. O agente reescreve pra sua área a partir do que você disser aqui.</p>
+    <p class="lead">Conte sua área de atuação e escolha os níveis de vaga que você considera.</p>
     <div class="grupo campos">
       <div>
         <label class="rotulo" for="profissao">Sua área, em uma frase</label>
         <input type="text" id="profissao" maxlength="200" placeholder="Ex.: engenharia de dados, com foco em pipelines e SQL">
-        <span class="ajuda">O agente pesquisa como as vagas dessa área são anunciadas e reescreve os termos de busca.</span>
+        <span class="ajuda">O assistente usará essa descrição para ajustar a busca à sua profissão.</span>
       </div>
       <div>
         <label class="rotulo">Níveis que você aceita</label>
@@ -234,18 +234,18 @@
 
   <!-- 5 -->
   <section class="tela" data-passo="5">
-    <h2>Salário e limites</h2>
-    <p class="lead">Dois números que decidem o que entra e o que sai.</p>
+    <h2>Salário e modelo de trabalho</h2>
+    <p class="lead">Informe os valores mensais em reais e os modelos de trabalho que você aceita.</p>
     <div class="grupo campos duas">
       <div>
-        <label class="rotulo" for="piso">Piso mensal, em reais</label>
+        <label class="rotulo" for="piso">Menor salário mensal que você considera</label>
         <input type="number" id="piso" min="0" step="100" placeholder="8000">
         <span class="ajuda">Abaixo disso a vaga é descartada, só quando o anúncio diz valor e período.</span>
       </div>
       <div>
         <label class="rotulo" for="referencia">O que você ganha hoje, por mês</label>
         <input type="number" id="referencia" min="0" step="100" placeholder="12000">
-        <span class="ajuda">Vaga de nível abaixo só conta como sênior se pagar acima disso.</span>
+        <span class="ajuda">Esse valor ajuda a comparar a remuneração de vagas de níveis diferentes.</span>
       </div>
     </div>
     <div class="grupo campos">
@@ -256,7 +256,7 @@
           <label class="opcao"><input type="checkbox" name="modelo" value="hibrido"><span class="t">🏢 Híbrido</span></label>
           <label class="opcao"><input type="checkbox" name="modelo" value="presencial"><span class="t">📍 Presencial</span></label>
         </div>
-        <span class="ajuda">Remoto vale em qualquer lugar. Híbrido e presencial só entram na sua cidade.</span>
+        <span class="ajuda">Vagas remotas podem ter restrições de localização no anúncio. Para híbrido e presencial, informe sua cidade.</span>
       </div>
       <div id="cidade-grupo" hidden>
         <label class="rotulo" for="cidade">Sua cidade</label>
@@ -268,23 +268,23 @@
 
   <!-- 6 -->
   <section class="tela" data-passo="6">
-    <h2>Candidatura automática</h2>
-    <p class="lead">O sistema sabe preencher formulário de vaga no navegador, com respostas que você aprova uma a uma. Isso chega desligado.</p>
+    <h2>Quer configurar o preenchimento de candidaturas?</h2>
+    <p class="lead">O assistente pode ajudar a preencher formulários com respostas revisadas por você. Você pode configurar essa opção agora ou depois.</p>
     <div class="grupo">
       <label class="toggle">
         <input type="checkbox" id="autorizado">
-        <span><span class="t">Ligar a candidatura automática</span><br><span class="d">Só liga de verdade depois que você preencher o perfil de candidatura com o agente. Enquanto isso, ele prepara currículo e rascunho, e quem envia é você.</span></span>
+        <span><span class="t">Quero configurar com o assistente</span><br><span class="d">Ainda será necessário completar e revisar seu perfil de candidatura com o assistente. Marcar esta opção não conclui a configuração.</span></span>
       </label>
     </div>
-    <div class="aviso info">"Desligado" é a resposta padrão e não atrapalha nada. Dá pra ligar depois.</div>
+    <div class="aviso info">Você pode continuar buscando vagas e preparando currículos com essa opção desligada.</div>
   </section>
 
   <!-- 7 -->
   <section class="tela" data-passo="7">
-    <h2>A Apify, por último</h2>
-    <p class="lead">O LinkedIn não deixa programa nenhum coletar vaga direto. Quem coleta por nós é um serviço na Apify, pago por vaga: a partir de US$ 2 por 1.000, cerca de US$ 0,20 por rodada de 100 vagas. É a fonte que mais rende.</p>
+    <h2>Incluir vagas do LinkedIn</h2>
+    <p class="lead">Esta conexão opcional usa a Apify, um serviço externo de coleta. Confira os custos na sua conta antes de usar. Você pode deixar o campo vazio e continuar.</p>
     <div class="grupo">
-      <p>1. Crie uma conta em <a href="https://apify.com" target="_blank" rel="noopener">apify.com</a>. O plano gratuito serve pra começar.</p>
+      <p>1. Crie uma conta em <a href="https://apify.com" target="_blank" rel="noopener">apify.com</a>. Confira os créditos e os valores disponíveis na sua conta.</p>
       <p>2. Abra a página do coletor de vagas do LinkedIn na Apify: <a href="https://console.apify.com/actors/hKByXkMQaC5Qt9UMN/input" target="_blank" rel="noopener">console.apify.com/actors/hKByXkMQaC5Qt9UMN/input</a>.</p>
       <p>3. Clique em <strong>API</strong>, depois em <strong>API clients</strong>, e use o ícone de copiar ao lado de "API token". Não precisa criar token novo nem usar o código que aparece embaixo.</p>
       <div class="prints">
@@ -297,21 +297,21 @@
       <div>
         <label class="rotulo" for="token">Token da Apify <span class="tag" id="token-estado" hidden>presente</span></label>
         <input type="password" id="token" autocomplete="off" placeholder="apify_api_…">
-        <span class="ajuda" id="token-ajuda">Vai pro arquivo <code>vagas/.env</code>, que está fora do git. Nunca aparece de volta nesta tela.</span>
+        <span class="ajuda" id="token-ajuda">A chave fica salva neste computador e é usada para acessar a Apify. Cole apenas aqui, nunca na conversa com a IA.</span>
       </div>
     </div>
-    <div class="aviso info">Sem token, tudo o resto funciona. Só o LinkedIn fica de fora.</div>
+    <div class="aviso info">Sem essa conexão, a busca continua nos outros sites de vagas.</div>
   </section>
 
   <!-- 8 -->
   <section class="tela" data-passo="8">
-    <h2>Salvo. Agora o agente termina.</h2>
-    <p class="lead">O que você respondeu já está nos arquivos do projeto. Duas coisas o formulário não faz, e é o agente quem faz.</p>
+    <h2>Tudo salvo neste computador</h2>
+    <p class="lead">Suas respostas e seus arquivos foram salvos neste computador. O formulário não os envia a um servidor externo. Para concluir a configuração, falta preparar seu currículo e ajustar a busca com o assistente.</p>
     <table class="resumo" id="resumo"></table>
     <div class="grupo">
-      <label class="rotulo" for="instrucao">Instrução pro agente</label>
+      <label class="rotulo" for="instrucao">Instrução para o assistente</label>
       <p>Abra o Claude Code ou o Codex na pasta do projeto e cole isto:</p>
-      <textarea id="instrucao" readonly aria-label="Instrução pro agente" style="min-height:140px;font-size:14px;line-height:20px"></textarea>
+      <textarea id="instrucao" readonly aria-label="Instrução para o assistente" style="min-height:140px;font-size:14px;line-height:20px"></textarea>
       <div class="acoes-inline" style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
         <button class="btn primario pequeno" type="button" id="copiar">Copiar instrução</button>
         <a class="btn secundario pequeno" id="baixar" download="onboarding-respostas.md" href="#">Baixar como arquivo</a>
@@ -331,7 +331,7 @@
 
 <script>
 (() => {
-  const PASSOS = ['Quem é você', 'Mercado', 'Currículo e LinkedIn', 'Profissão', 'Salário', 'Candidatura automática', 'Apify', 'Pronto'];
+  const PASSOS = ['Quem é você', 'Mercado', 'Currículo e LinkedIn', 'Profissão', 'Salário', 'Candidatura automática', 'LinkedIn (opcional)', 'Resumo'];
   const PAISES = [
     ['Brasil', 'Brazil', '106057199'], ['Portugal', 'Portugal', '100364837'], ['Estados Unidos', 'United States', '103644278'],
     ['Reino Unido', 'United Kingdom', '101165590'], ['Canadá', 'Canada', '101174742'], ['Alemanha', 'Germany', '101282230'],
@@ -386,7 +386,7 @@
     $$('section.tela').forEach((s) => { const on = Number(s.dataset.passo) === atual; s.classList.toggle('ativa', on); s.classList.toggle('voltando', on && direcao < 0); });
     $('#voltar').disabled = atual === 1;
     $('#continuar').hidden = false;
-    $('#continuar').innerHTML = (atual === 7 ? 'Salvar e concluir' : atual === 8 ? 'Fechar' : 'Continuar') + (atual < 8 ? icone('arrow-right', 18) : '');
+    $('#continuar').innerHTML = (atual === 7 ? 'Salvar e ver resumo' : atual === 8 ? 'Fechar' : 'Continuar') + (atual < 8 ? icone('arrow-right', 18) : '');
     $('#salvo-status').textContent = '';
     window.scrollTo({ top: 0 });
     if (atual === 8) montarResumo();
@@ -535,7 +535,7 @@
       const st = $('#salvo-status'); st.textContent = 'Salvo.'; st.style.animation = 'none'; void st.offsetWidth; st.style.animation = '';
       return true;
     } catch (e) {
-      $('#salvo-status').textContent = `Não salvou: ${e.message}`;
+      $('#salvo-status').textContent = `Não foi possível salvar. Tente novamente. Detalhe: ${e.message}`;
       return false;
     } finally { $('#continuar').disabled = false; }
   }
@@ -546,7 +546,7 @@
   let ocupado = false;
   $('#continuar').addEventListener('click', async () => {
     if (ocupado) return;
-    if (atual === 8) { $('#salvo-status').textContent = 'Tudo salvo. Pode fechar esta aba e parar o servidor com Ctrl+C.'; $('#continuar').hidden = true; return; }
+    if (atual === 8) { $('#salvo-status').textContent = 'Tudo salvo neste computador. Você pode fechar esta aba e concluir a configuração com o assistente usando a instrução copiada.'; $('#continuar').hidden = true; return; }
     ocupado = true;
     try {
       const dados = await coletarPasso();
@@ -567,9 +567,9 @@
       ['Área', p.profissao || ''],
       ['Piso', p.salario?.minimo_mensal_brl ? `R$ ${p.salario.minimo_mensal_brl} por mês` : ''],
       ['Modelo', [p.aceita_remoto !== false ? 'remoto' : null, p.aceita_hibrido ? 'híbrido' : null, p.aceita_presencial ? 'presencial' : null].filter(Boolean).join(', ') + (p.cidade ? ` em ${p.cidade}` : '')],
-      ['Candidatura automática', estado.candidatura?.autorizado ? 'ligada, falta o perfil de candidatura' : 'desligada'],
-      ['Apify', estado.env?.token ? (estado.env.task ? 'token e Task salvos' : 'token salvo; busca gravada em config/linkedin.json') : 'sem token: LinkedIn fica de fora'],
-      ['O agente ainda faz', 'montar o currículo base · reescrever os termos de busca · marcar o perfil como configurado'],
+      ['Candidatura automática', estado.candidatura?.autorizado ? 'solicitada; falta concluir o perfil com o assistente' : 'desligada'],
+      ['Apify', estado.env?.token ? (estado.env.task ? 'token e Task salvos' : 'conexão salva') : 'sem token: LinkedIn fica de fora'],
+      ['Próximas tarefas', 'montar o currículo base · reescrever os termos de busca · marcar o perfil como configurado'],
     ];
     $('#resumo').innerHTML = linhas.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join('');
 
@@ -579,7 +579,7 @@
       'Falta você: montar meu currículo base a partir de Skills/adapt-resume/materiais-fonte/ (me entreviste antes, sem inventar nada) e reescrever vagas/config/palavras-chave.json pra minha área. Depois `npm run onboarding -- --concluir`.',
     ].join('\n');
     $('#instrucao').value = instrucao;
-    const resumoMd = ['# Onboarding do Caça-vagas', '', `Salvo em ${new Date().toLocaleDateString('pt-BR')}.`, '', ...linhas.map(([k, v]) => `- **${k}:** ${v || '(vazio)'}`), '', '## Instrução pro agente', '', '```', instrucao, '```', ''].join('\n');
+    const resumoMd = ['# Onboarding do Caça-vagas', '', `Salvo em ${new Date().toLocaleDateString('pt-BR')}.`, '', ...linhas.map(([k, v]) => `- **${k}:** ${v || '(vazio)'}`), '', '## Instrução para o assistente', '', '```', instrucao, '```', ''].join('\n');
     $('#baixar').href = URL.createObjectURL(new Blob([resumoMd], { type: 'text/markdown;charset=utf-8' }));
   }
   $('#copiar').addEventListener('click', async () => {

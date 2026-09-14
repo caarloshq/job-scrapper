@@ -12,7 +12,7 @@ Se a saída disser **"Perfil ainda NÃO configurado"**, o projeto está com valo
 
 Olhe os blocos marcados `ok`: eles vieram do **formulário** (`npm start`, que o `npm run setup` já abre no primeiro uso), que a pessoa preenche no navegador e que grava perfil, mercado, salário, busca do LinkedIn, token e os arquivos de currículo. **Não repergunte o que está `ok`.** Se os blocos 1, 2 e 5 estiverem em `falta`, peça pra pessoa rodar `npm start` e preencher o formulário primeiro: é mais rápido que entrevistar. **Nunca rode `npm start` você mesmo:** ele sobe um servidor e fica esperando.
 
-O que sobra pra você, sempre: o bloco 3 (montar o currículo base a partir dos arquivos em `materiais-fonte/`, entrevistando antes) e o bloco 4 (reescrever `palavras-chave.json` pra profissão dela e confirmar a busca do LinkedIn). Siga o [`ONBOARDING.md`](ONBOARDING.md) e feche cada um com a prova.
+O que sobra pra você, sempre: o bloco 3 (montar o currículo base a partir dos arquivos em `materiais-fonte/`, entrevistando antes) e o bloco 4 (reescrever `palavras-chave.json` pra profissão dela e confirmar a busca do LinkedIn). Siga o [roteiro técnico](docs/configuracao-tecnica.md) e feche cada bloco com a prova. O `ONBOARDING.md` é o guia para quem usa.
 
 A sua parte é **entrevista**, não formulário: o formulário já pegou os fatos; você pergunta de volta antes de escrever qualquer frase de currículo. Regras que valem nela:
 
