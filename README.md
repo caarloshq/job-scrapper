@@ -58,7 +58,7 @@ Tudo isso mora em `vagas/config/`, fora do código. Apertar uma regra vale na pr
 Precisa de Node 20+, Python 3 e o Claude Code ou o Codex.
 
 ```bash
-git clone <este repositório> caca-vagas
+git clone https://github.com/caarloshq/job-scrapper.git caca-vagas
 cd caca-vagas/vagas
 npm run setup
 ```
