@@ -1,7 +1,6 @@
 # Caça-Vagas — instruções do subsistema
 
-> Subsistema de `Projects/Pessoal/job-scrapper/`. As regras do projeto pai valem aqui, em especial a **Regra 0** (tudo dentro da pasta) e a **Regra 1** (nunca inventar).
-> Spec completa: [`plano-caca-vagas.md`](plano-caca-vagas.md)
+> O radar do Caça-vagas. As regras do projeto valem aqui, em especial a **Regra 1** (nunca inventar). O roteiro de primeiro uso está em [`../ONBOARDING.md`](../ONBOARDING.md).
 >
 > **A rodada é a tarefa agendada `caca-vagas-diario`, 09:05, DIA SIM DIA NÃO** (mudou em 2026-08-25, era todo dia). Ela agora tem duas metades: coletar e publicar, e **conduzir as candidaturas da meta registrada em `data/candidaturas.json`** ([`RODADA-DIARIA.md`](RODADA-DIARIA.md) §8). Ela não contém lógica: aponta para [`RODADA-DIARIA.md`](RODADA-DIARIA.md), que é onde o processo é mantido. Divergiu? O runbook vence.
 
@@ -21,12 +20,12 @@ Leia isto antes de confiar em qualquer promessa deste arquivo. O `critic` pegou 
 | Portão de vida | ✅ funciona, com teste de integração contra HTML real |
 | Camada 2 (`site:`) | ⚠️ **só com `WebSearch`**, ver abaixo |
 | Filtro de disciplina e de marketing | ✅ título, empresa e abertura da descrição |
-| Sincronizar o Notion | ❌ **não existe em código.** É manual, feito pelo Claude na rodada |
+| **Quadro local** | ✅ `data/quadro.json`, escrito por `src/quadro.js`. A rodada registra as aprovadas; `npm run quadro` abre no navegador. Notion virou caso particular: `espelhar()` no mesmo arquivo |
 | Rodada diária agendada | ✅ `caca-vagas-diario`, 09:05, executa [`RODADA-DIARIA.md`](RODADA-DIARIA.md) |
 | Gerar currículo PDF **e DOCX** | ✅ `generate_resume.py`, formato pela extensão. `reportlab` e `python-docx` instalados |
 | Modelo de e-mail para enviar o currículo | ✅ `../Skills/adapt-resume/modelos-email.md`, seis modelos. **Texto pronto, envio na mão** |
 | Currículo automático acima de 75% | ✅ corte em `config/perfil.json`, executado na rodada |
-| Anexar arquivo no Notion | ❌ só `Currículo (caminho)` em texto. O anexo precisa de token que só você cria |
+| Currículo no card | ⚠️ o card do quadro mostra resumo, gaps e link; o PDF fica em `../Skills/adapt-resume/builds/<empresa>/` |
 | **Candidatar-se pelo navegador** | ⚠️ **manual, conduzido pelo Claude no Chrome dele.** Não há código: é o `RODADA-DIARIA.md` §8 mais o Chrome logado. Gupy, InHire e LinkedIn são permitidos; conferir comportamento atual no navegador |
 | Perfil de respostas de formulário | ✅ `config/perfil-candidatura.json`. Fatos e autorizações; composição e conferência em `RESPOSTAS.md` |
 | Banco de perguntas de formulário | ✅ `data/perguntas.json`, versionado. Aprovação tem escopo; reutilização conforme `RESPOSTAS.md` |
@@ -46,7 +45,7 @@ npm run descobrir     # empresa de ATS que o dork achou e ainda nao esta na list
 
 ## O índice é um número só, e ele é a soma
 
-`Confiança` no Notion é o **índice final**: `60 determinísticos + 40 semânticos`. Você vê o número pronto; a composição é problema meu.
+`Confiança` no quadro é o **índice final**: `60 determinísticos + 40 semânticos`. Você vê o número pronto; a composição é problema meu.
 
 Os 60 o Node recalcula toda rodada. Os 40 custam **ler a vaga inteira** contra o currículo, e por isso moram em **`data/semantico.json`**, indexado por `ID externo` — o único arquivo de `data/` que **vai pro git** e que a reconstrução do cache **nunca apaga**.
 
@@ -128,23 +127,17 @@ O Node deixa tudo pronto e para. O que resta:
 1. **Camada 2 com `WebSearch`** — os dorks de `config/dorks.json`, resultado para o `enriquecer`.
 2. **Score semântico (0–40)** — ler a descrição contra `../Skills/adapt-resume/base_content_pt.json`.
 3. **Salário do texto** quando a fonte não traz campo. O Gupy nunca traz.
-4. **Sincronizar o Notion** — via MCP, à mão. **Não há código para isso.** Database e data source são as suas, criadas na seção "Onde ver as vagas" do ONBOARDING.md.
+4. **Nada de publicar.** A rodada registra as aprovadas no quadro sozinha. Se a pessoa usa Notion, espelhar a database com `espelhar()` de `src/arquivo.js` no começo da rodada; o histórico é preservado.
 5. **Currículo** — vaga aprovada passa pela skill `../Skills/adapt-resume/SKILL.md`, nunca por fora.
 6. **E-mail que leva o currículo** — os seis modelos estão em `../Skills/adapt-resume/modelos-email.md`, com o mapa de qual usar em cada `Status` do board. A rodada agendada **não envia e-mail** e nunca vai enviar: quem manda é você. O que a skill faz é deixar o texto pronto junto do PDF.
 
-## O schema do Notion, como ele é hoje
+## O quadro, e o que cada fase significa
 
-15 propriedades, conferidas contra a database em 2026-07-30. Você mexe nele à mão, então **confira antes de escrever** — foi assim que este parágrafo passou o dia afirmando um campo `Idade` que não existe.
+`data/quadro.json`, versão 2: uma entrada por `idExterno`, com `status`, o retrato da vaga (título, empresa, link, fonte, nota, salário, data) e `historico`, uma linha por mudança de fase com data e quem moveu (`rodada`, `pessoa` ou `agente`).
 
-Aparecem no card do board `Radar`: `Vaga` · `Confiança` (%) · `Empresa` · `Salário` · `Currículo`.
+**Fases:** `Avaliar` · `Aplicar` · `Já apliquei` · `Entrevista` · `Cancelada`. As três últimas são concluídas (`CONCLUIDOS` em `src/arquivo.js`): a vaga sai do radar e da fila de leitura, e continua no quadro. `Aplicado por IA` existe pra candidatura automática e aparece junto de `Já apliquei`. `Revisar` é aceito por compatibilidade e é ativo.
 
-Só no card aberto: `Status` · `Resumo` · `Gaps` · `Link` · `Senioridade` · `Fonte` · `Publicada em` · `Currículo (caminho)` · `ID externo` · `✓ Concluir` (botão, criado por ele) · **`Prazo`**, que fica no fim de propósito e fora dos cards.
-
-**Não existe `Idade`.** você pediu `Prazo` e `Idade` de volta; só `Prazo` voltou. O `Fonte` também **não tem a opção `Vagas UX`**.
-
-**Status:** `Avaliar` · `Já apliquei` · `Entrevista` · `Cancelada` · `Revisar`. Renomeado em 2026-08-05 (era `Sem retorno`/`Descartada` — mesmo option ID, Notion preserva a atribuição no rename). `Cancelada` = vaga não aceita mais aplicação. `Revisar` = fila de triagem (link morto ou duplicata), não é terminal — ver `RODADA-DIARIA.md` §1.5. Não há `Aplicar` — para pedir currículo, chat ou `npm run instrucoes`.
-
-Não existem `Faixa`, `Modelo`, `Camada`, `Validada`, `Também visto em`. **Não recrie sem pedir.**
+**Regras:** nunca editar o arquivo à mão; nunca apagar entrada; mover por código só com `quadro.mover(id, status, { por: 'agente' })`, que grava o histórico. Toda gravação relê o disco na hora: card movido no navegador durante uma rodada não volta pra trás. A primeira gravação de cada dia deixa cópia em `data/backups/`.
 
 ## Regra de nível e salário
 
@@ -209,8 +202,8 @@ Modelo de trabalho desconhecido **passa** e fica marcado `modeloDesconhecido`. D
 - **`empresa_excluida` existe porque dedupe não resolve franquia.** Sete franqueadas da V4 Company ocuparam sete linhas do radar com a mesma vaga de designer gráfico: `empresa` é igual, mas o nome da franqueada entra no **título** e cada uma tem id próprio. A lista é curta e reversível de propósito — exclui **empresa**, não categoria.
 - **A quarta chave do dedupe é `empresa + título`, e ela é fraca de propósito.** Vaga republicada ganha identidade nova na própria fonte e não sobra nada em comum: a Radix voltou na InHire com outro UUID, a SCALIS na Vagas Remotas com slug `-2` e `-3`. Como duas vagas reais podem dividir o título, o perdedor **nunca some** — vai para `idsAlternativos`.
 - **Modelo de trabalho também vem só no corpo.** A EDGE abre com `Modalidade: Presencial (Maceió ou Arapiraca)` e o título é neutro: entrava como remoto por omissão. `pistasDaDescricao()` lê a abertura, depois do campo estruturado e do título.
-- **`Fonte` do Notion não tem a opção "Vagas UX".** Duas vagas foram publicadas em 2026-07-30 com o campo vazio e a fonte escrita no `Resumo`. Preencher com "Vagas Remotas" seria inventar dado, e mexer nas opções do select já apagou 19 valores de `Status` hoje. Se for corrigir, adicionar a opção **fora** da rodada e conferir que nada zerou.
-- **Nunca inventar id ao publicar no Notion.** Copiar o `idExterno` do coletor, literal. Ids em estilo slug (`vagasremotas:codepath-senior-product-designer`) foram invenção minha na primeira leva e nunca casaram de volta: cinco vagas já publicadas apareceram como novas. O `arquivo.aplicar()` hoje cura isso casando pelo **link**, mas a cura não é desculpa para criar o problema.
+- **Fonte que o quadro não conhece não vira outra fonte.** Duas vagas foram publicadas em 2026-07-30 com o campo vazio porque o board de então não tinha a opção. Preencher com "Vagas Remotas" seria inventar dado, e mexer nas opções do select já apagou 19 valores de `Status` hoje. Se for corrigir, adicionar a opção **fora** da rodada e conferir que nada zerou.
+- **Nunca inventar id ao registrar uma vaga.** Copiar o `idExterno` do coletor, literal. Ids em estilo slug (`vagasremotas:codepath-senior-product-designer`) foram invenção minha na primeira leva e nunca casaram de volta: cinco vagas já publicadas apareceram como novas. O `arquivo.aplicar()` hoje cura isso casando pelo **link**, mas a cura não é desculpa para criar o problema.
 - **`CONCLUIDOS` em `src/arquivo.js` compara pelo NOME da opção do Status, não pelo ID.** Quando você renomeou `Sem retorno`→`Cancelada` e `Descartada`→`Revisar` em 2026-08-05, a lista continuou com os nomes velhos — vaga marcada `Cancelada` ia voltar a ser oferecida como se ainda estivesse aberta, porque o código não reconhecia o novo rótulo. Renomear opção no Notion é seguro pros dados (mesmo ID, atribuição preservada); o que não é seguro é qualquer lugar do código que compara string literal contra o nome da opção. Se o Status ganhar outro rename, `CONCLUIDOS` e os testes de `arquivo.test.js` têm que mudar junto.
 - **Dedupe por prioridade de fonte assume que a fonte mais forte continua viva.** Medido em 2026-08-05: 2 de 2 vagas checadas, a InHire (prioridade 10, vence o LinkedIn) tinha morrido enquanto o espelho da mesma vaga no LinkedIn (prioridade 7) continuava de pé. O vencedor do dedupe nunca é revalidado depois de escolhido — por isso a fila `Revisar` existe (`RODADA-DIARIA.md` §1.5): checa link morto e, se achar, deixa a gêmea viva assumir, mesmo que ela tivesse prioridade menor.
 

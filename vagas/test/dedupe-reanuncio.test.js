@@ -47,7 +47,7 @@ test('juntar colapsa o reanuncio por cidade', () => {
 });
 
 test('vaga ja enviada nao volta ao radar por id novo da mesma requisicao', () => {
-  // dados injetados: espelhar() GRAVA data/notion.json de verdade, e usar isso
+  // dados injetados: espelhar() GRAVA data/quadro.json de verdade, e usar isso
   // num teste apaga o espelho da rodada. Aprendido em 2026-09-07.
   const dados = { versao: 1, vagas: { 'linkedin:4459847741': { status: 'Aplicado por IA', empresa: 'Nortal', titulo: '(1552) Senior UX/UI - Product Designer', url: 'https://www.linkedin.com/jobs/view/4459847741' } } };
   const v = aplicar({ idExterno: 'uxremotetalent:senior-ux-ui-product-designer', empresa: 'Nortal', titulo: 'Senior UX/UI Product Designer', link: 'https://www.uxremotetalent.com/ux-job/senior-ux-ui-product-designer' }, dados);

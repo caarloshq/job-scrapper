@@ -117,10 +117,9 @@ Aprovações e disponibilidade do runtime são verificadas ao operar a tarefa.
 |---|---|
 | [`RODADA-DIARIA.md`](RODADA-DIARIA.md) | o passo a passo que a tarefa executa |
 | [`AGENTS.md`](AGENTS.md) | estado real do subsistema, regras invioláveis, **armadilhas já pagas** |
-| [`plano-caca-vagas.md`](plano-caca-vagas.md) | a spec original |
 | `data/semantico.json` | as leituras. **É o que dói perder** — vai pro git |
 | `data/vagas.json` | cache, reconstruído a cada rodada |
-| `data/notion.json` | espelho do board, regravado no começo de cada rodada |
+| `data/quadro.json` | o quadro: estado e histórico de cada vaga. Vai pro git; nunca se apaga |
 
 O `AGENTS.md` fecha com uma lista de armadilhas que custaram erro real — link quebrado publicado, salário inventado por um regex guloso, vaga boa descartada por uma palavra de três letras. Antes de mexer em filtro ou em fonte, vale a leitura.
 
