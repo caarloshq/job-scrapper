@@ -1,0 +1,10 @@
+{
+  "_nota": "Somente páginas públicas. Falhas, bloqueios e listas dinâmicas exigem leitura assistida; nunca significam zero vagas. Nenhum login, CAPTCHA ou inscrição é automatizado.",
+  "fontes": [
+    { "id": "vanhack", "enabled": true },
+    { "id": "trampos", "enabled": true },
+    { "id": "dribbble", "enabled": true },
+    { "id": "wellfound", "enabled": true },
+    { "id": "authenticjobs", "enabled": true }
+  ]
+}

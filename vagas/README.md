@@ -127,3 +127,8 @@ O `AGENTS.md` fecha com uma lista de armadilhas que custaram erro real — link 
 
 - **Anexar o arquivo no Notion.** Hoje só grava o caminho em texto. O anexo precisa de um token de File Upload que só você cria, em `vagas/.env`
 - **`Vagas UX` no campo `Fonte`.** A opção não existe no board; essas vagas vão com o campo vazio e a fonte escrita no `Resumo`
+
+
+## Fontes, paridade e outros cargos
+
+Consulte [Fontes e configuração](docs-fontes.md) para o catálogo compartilhado, limites reais de cada integração e o teste com Product Owner. Use `npm run fontes` para inspecionar capacidades e termos sem coletar. `npm run verificar:versao` consulta o upstream Git sem alterar seu checkout; também roda no primeiro uso. `npm run verificar:fontes -- --comparar /outro/vagas` verifica paridade de código e capacidades, preservando preferências e dados pessoais.

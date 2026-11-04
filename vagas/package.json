@@ -24,6 +24,10 @@
     "apify": "node scripts/apify.mjs",
     "checar:publico": "node scripts/checar-publico.mjs",
     "onboarding": "node scripts/onboarding.mjs",
-    "quadro": "node scripts/quadro.mjs"
+    "quadro": "node scripts/quadro.mjs",
+    "verificar:versao": "node scripts/verificar-versao.mjs",
+    "fontes": "node scripts/fontes.mjs",
+    "verificar:fontes": "node scripts/verificar-fontes.mjs",
+    "sincronizar:fontes": "node scripts/sincronizar-fontes.mjs"
   }
 }

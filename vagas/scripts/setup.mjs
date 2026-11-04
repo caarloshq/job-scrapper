@@ -1,9 +1,12 @@
+import { verificarVersaoGit, formatarVersaoGit } from '../src/versao-git.js';
 // Setup de maquina nova. Objetivo: `git pull && npm run setup` e nada mais.
 // Nao instala dependencia Node porque nao ha nenhuma: fetch e nativo e o cache e JSON.
 import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { RAIZ, DIR_DADOS, perfil } from '../src/config.js';
+
+console.log(formatarVersaoGit(await verificarVersaoGit({ cwd: RAIZ })));
 
 console.log('\nCaca-vagas — setup\n' + '='.repeat(52) + '\n');
 
@@ -51,3 +54,4 @@ if (perfil._configurado !== true && !process.argv.includes('--sem-navegador')) {
   console.log('\nPerfil ainda nao configurado: abrindo o formulario de onboarding no navegador...\n');
   execFileSync(process.execPath, [join(RAIZ, 'scripts', 'onboarding.mjs'), '--abrir'], { stdio: 'inherit' });
 }
+

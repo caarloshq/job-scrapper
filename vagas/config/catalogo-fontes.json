@@ -1,0 +1,300 @@
+{
+  "versao": 1,
+  "_nota": "Capacidades disponíveis, não prova de disponibilidade atual. Credenciais, termos, empresas e critérios pertencem ao perfil; não fazem parte da paridade de código.",
+  "fontes": [
+    {
+      "id": "gupy",
+      "nome": "Gupy",
+      "modo": "coletor",
+      "arquivo": "src/fontes/gupy.js",
+      "nicho": "configuravel"
+    },
+    {
+      "id": "remotar",
+      "nome": "Remotar",
+      "modo": "coletor",
+      "arquivo": "src/fontes/remotar.js",
+      "nicho": "configuravel"
+    },
+    {
+      "id": "inhire",
+      "nome": "InHire",
+      "modo": "coletor",
+      "arquivo": "src/fontes/inhire.js",
+      "nicho": "configuravel"
+    },
+    {
+      "id": "vagasremotas",
+      "nome": "Vagas Remotas",
+      "modo": "coletor",
+      "arquivo": "src/fontes/vagasremotas.js",
+      "nicho": "configuravel"
+    },
+    {
+      "id": "colunatech",
+      "nome": "Coluna Tech",
+      "modo": "coletor",
+      "arquivo": "src/fontes/colunatech.js",
+      "nicho": "configuravel"
+    },
+    {
+      "id": "vagasux",
+      "nome": "Vagas UX",
+      "modo": "coletor",
+      "arquivo": "src/fontes/vagasux.js",
+      "nicho": "design"
+    },
+    {
+      "id": "arc",
+      "nome": "Arc",
+      "modo": "coletor",
+      "arquivo": "src/fontes/arc.js",
+      "nicho": "design"
+    },
+    {
+      "id": "uxremotetalent",
+      "nome": "UX Remote Talent",
+      "modo": "coletor",
+      "arquivo": "src/fontes/uxremotetalent.js",
+      "nicho": "design"
+    },
+    {
+      "id": "uxjobs",
+      "nome": "UX Jobs",
+      "modo": "coletor",
+      "arquivo": "src/fontes/uxjobs.js",
+      "nicho": "design"
+    },
+    {
+      "id": "linkedin",
+      "nome": "LinkedIn",
+      "modo": "coletor",
+      "arquivo": "src/fontes/apify.js",
+      "nicho": "configuravel"
+    },
+    {
+      "id": "greenhouse",
+      "nome": "Greenhouse",
+      "modo": "api_por_empresa",
+      "arquivo": "src/fontes/ats.js",
+      "config": "config/empresas-ats.json"
+    },
+    {
+      "id": "lever",
+      "nome": "Lever",
+      "modo": "api_por_empresa",
+      "arquivo": "src/fontes/ats.js",
+      "config": "config/empresas-ats.json"
+    },
+    {
+      "id": "ashby",
+      "nome": "Ashby",
+      "modo": "api_por_empresa",
+      "arquivo": "src/fontes/ats.js",
+      "config": "config/empresas-ats.json"
+    },
+    {
+      "id": "workable",
+      "nome": "Workable",
+      "modo": "api_por_empresa",
+      "arquivo": "src/fontes/ats.js",
+      "config": "config/empresas-ats.json"
+    },
+    {
+      "id": "smartrecruiters",
+      "nome": "SmartRecruiters",
+      "modo": "api_por_empresa",
+      "arquivo": "src/fontes/ats.js",
+      "config": "config/empresas-ats.json"
+    },
+    {
+      "id": "builtin",
+      "nome": "Built In",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/builtin.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "remotli",
+      "nome": "Remotli",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/remotli.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "weworkremotely",
+      "nome": "We Work Remotely",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/weworkremotely.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "jobicy",
+      "nome": "Jobicy",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/jobicy.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "torre",
+      "nome": "Torre",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/torre.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "remoteok",
+      "nome": "RemoteOK",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/remoteok.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "cryptocurrencyjobs",
+      "nome": "Crypto Jobs",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/cryptocurrencyjobs.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "remotive",
+      "nome": "Remotive",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/remotive.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "workingnomads",
+      "nome": "Working Nomads",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/workingnomads.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "nodesk",
+      "nome": "NoDesk",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/nodesk.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "jobspresso",
+      "nome": "Jobspresso",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/jobspresso.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "himalayas",
+      "nome": "Himalayas",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/himalayas.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "getonbrd",
+      "nome": "Get on Board",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/getonbrd.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "landingjobs",
+      "nome": "Landing.jobs",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/landingjobs.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "hackernews",
+      "nome": "Hacker News Who is hiring",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/hackernews.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "wttj",
+      "nome": "Welcome to the Jungle",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/wttj.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "a16z-speedrun-talent",
+      "nome": "a16z Speedrun",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/a16z-speedrun-talent.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "4dayweek",
+      "nome": "4 Day Week",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/4dayweek.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "themuse",
+      "nome": "The Muse",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/themuse.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "generalist-world",
+      "nome": "Generalist World",
+      "modo": "provider",
+      "arquivo": "src/fontes/careerops/providers/generalist-world.mjs",
+      "config": "config/fontes-gringas.json"
+    },
+    {
+      "id": "vanhack",
+      "nome": "VanHack",
+      "modo": "descoberta_html",
+      "arquivo": "src/fontes/portais.js",
+      "config": "config/fontes-portais.json"
+    },
+    {
+      "id": "trampos",
+      "nome": "Trampos",
+      "modo": "descoberta_html",
+      "arquivo": "src/fontes/portais.js",
+      "config": "config/fontes-portais.json"
+    },
+    {
+      "id": "dribbble",
+      "nome": "Dribbble Jobs",
+      "modo": "descoberta_html",
+      "arquivo": "src/fontes/portais.js",
+      "config": "config/fontes-portais.json"
+    },
+    {
+      "id": "wellfound",
+      "nome": "Wellfound",
+      "modo": "descoberta_html",
+      "arquivo": "src/fontes/portais.js",
+      "config": "config/fontes-portais.json"
+    },
+    {
+      "id": "authenticjobs",
+      "nome": "Authentic Jobs",
+      "modo": "assistida",
+      "arquivo": "src/fontes/portais.js",
+      "config": "config/fontes-portais.json"
+    },
+    {
+      "id": "indeed",
+      "nome": "Indeed",
+      "modo": "importacao_opcional",
+      "arquivo": "src/fontes/importadas.js",
+      "config": "config/fontes-importadas.json"
+    },
+    {
+      "id": "glassdoor",
+      "nome": "Glassdoor",
+      "modo": "importacao_opcional",
+      "arquivo": "src/fontes/importadas.js",
+      "config": "config/fontes-importadas.json"
+    }
+  ]
+}

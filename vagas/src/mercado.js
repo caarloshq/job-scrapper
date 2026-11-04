@@ -15,7 +15,7 @@ export const FOCOS = ['nacional', 'internacional', 'ambos'];
 
 /** Fontes por mercado, pelo NOME exportado em src/fontes/*.js. */
 export const FONTES_NACIONAIS = ['Gupy', 'Remotar', 'InHire', 'Vagas Remotas', 'Coluna Tech', 'Vagas UX'];
-export const FONTES_INTERNACIONAIS = ['Arc', 'UX Remote Talent', 'ATS internacional', 'Himalayas'];
+export const FONTES_INTERNACIONAIS = ['Arc', 'UX Remote Talent', 'ATS internacional', 'Himalayas', 'UX Jobs', 'Gringas (career-ops)'];
 // O LinkedIn serve aos dois: quem decide o pais e a busca da Task/Actor.
 export const FONTES_AMBOS = ['LinkedIn (Apify)'];
 
@@ -67,3 +67,4 @@ export function idiomaDoCurriculo(perfil) {
   if (m.foco === 'ambos') return m.prioridade === 'internacional' ? 'en' : 'pt';
   return 'pt';
 }
+

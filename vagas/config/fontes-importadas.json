@@ -1,0 +1,40 @@
+{
+  "_nota": "Importação opcional, não busca direta. Ative apenas após fornecer um JSON autorizado ou um dataset Apify existente. Nenhum Actor é iniciado.",
+  "fontes": [
+    {
+      "fonte": "Indeed",
+      "habilitada": false,
+      "tipo": "local-json",
+      "arquivo": "importacoes/indeed.json",
+      "maxItens": 1000,
+      "campos": {
+        "title": "title",
+        "url": "url",
+        "company": "company",
+        "location": "location",
+        "description": "description",
+        "publishedAt": "publishedAt",
+        "id": "id"
+      }
+    },
+    {
+      "fonte": "Glassdoor",
+      "habilitada": false,
+      "tipo": "apify-dataset",
+      "datasetId": "SUBSTITUAporDatasetExistente",
+      "limitePorPagina": 100,
+      "maxPaginas": 10,
+      "maxItens": 1000,
+      "timeoutMs": 20000,
+      "campos": {
+        "title": "title",
+        "url": "url",
+        "company": "company",
+        "location": "location",
+        "description": "description",
+        "publishedAt": "publishedAt",
+        "id": "id"
+      }
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import { verificarVersaoGit, formatarVersaoGit } from '../src/versao-git.js';
 // O estado do onboarding: o que ja esta configurado, o que falta, e qual e o
 // proximo bloco. E o comando que a pessoa e o agente rodam para saber onde
 // estao. Nao pergunta nada: quem entrevista e o agente, pelo ONBOARDING.md.
@@ -11,6 +12,8 @@ import { join, basename, extname } from 'node:path';
 import { spawnSync, spawn } from 'node:child_process';
 import { createServer } from 'node:http';
 import { RAIZ, perfil, palavras } from '../src/config.js';
+
+console.log(formatarVersaoGit(await verificarVersaoGit({ cwd: RAIZ })));
 import { validar as validarMercado, idiomaDoCurriculo } from '../src/mercado.js';
 
 const DIR_ADAPT = join(RAIZ, '..', 'Skills', 'adapt-resume');
@@ -334,3 +337,4 @@ if (args.includes('--abrir')) abrir();
 else if (args.includes('--extrair')) extrair();
 else if (args.includes('--concluir')) concluir();
 else imprimir();
+

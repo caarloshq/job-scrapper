@@ -1,12 +1,7 @@
 // ATS internacionais, por empresa.
 //
-// POR QUE ESTA E A UNICA ROTA INTERNACIONAL QUE FUNCIONA:
-// os agregadores prometiam busca e nao entregam. Medido em 2026-07-30 —
-//   Himalayas: 98.705 vagas, `search` e `category` IGNORADOS, 20 por pagina.
-//              Filtrar design exigiria 4.935 requisicoes.
-//   Remotive:  o feed publico inteiro tem 35 vagas, das quais 1 e de design,
-//              e é design grafico. `search` e `category` tambem ignorados.
-// Aqui nao precisa de busca: pedimos o quadro de UMA empresa e filtramos local.
+// Consulta quadros públicos por empresa; o filtro de cargo vem da configuração.
+// Disponibilidade e cobertura variam por provedor, região e empresa.
 //
 // Cada provedor tem um formato. O que muda e so como extrair; o resto e comum.
 import { buscar, limparHtml, dormir, novoContador, normalizarTexto, casaTermo } from '../util.js';
@@ -18,6 +13,28 @@ export const NOME = 'ATS internacional';
 // Exportado para o scripts/descobrir-empresas.mjs reusar a URL de cada provedor
 // em vez de manter uma segunda copia dela, que sairia do ar sem ninguem notar.
 export const PROVEDORES = {
+  lever: {
+    rotulo: 'Lever',
+    url: (org) => `https://api.lever.co/v0/postings/${encodeURIComponent(org)}?mode=json`,
+    extrair: (json) => Array.isArray(json) ? json : [],
+    normalizar: (j, org, nome) => ({
+      id: j.id,
+      titulo: j.text,
+      empresa: nome || org,
+      descricao: limparHtml([
+        j.descriptionPlain || j.description,
+        ...(j.lists || []).map((s) => `${s.text || ''} ${s.content || ''}`),
+        j.additionalPlain || j.additional,
+      ].filter(Boolean).join(' ')),
+      link: j.hostedUrl || j.applyUrl,
+      local: [...new Set([j.categories?.location, ...(j.categories?.allLocations || [])].filter(Boolean))].join('; ') || null,
+      modelo: j.workplaceType === 'hybrid' ? 'hibrido' : /^(onsite|on-site)$/.test(j.workplaceType || '') ? 'presencial' : j.workplaceType === 'remote' ? 'remoto' : null,
+      remoto: j.workplaceType === 'remote' ? true : /^(onsite|on-site|hybrid)$/.test(j.workplaceType || '') ? false : null,
+      publicadaEm: Number.isFinite(j.createdAt) && !Number.isNaN(new Date(j.createdAt).getTime()) ? new Date(j.createdAt).toISOString() : null,
+      salarioBruto: null,
+    }),
+  },
+
   ashby: {
     rotulo: 'Ashby',
     url: (org) => `https://api.ashbyhq.com/posting-api/job-board/${org}?includeCompensation=true`,
@@ -155,8 +172,8 @@ export async function coletar(empresas) {
         cidade: v.local,
         estado: null,
         pais: v.local,
-        modelo: v.remoto ? 'remoto' : null,
-        remoto: v.remoto || null,
+        modelo: v.modelo || (v.remoto ? 'remoto' : null),
+        remoto: v.remoto ?? null,
         publicadaEm: v.publicadaEm,
         atualizadaEm: null,
         prazo: null,
@@ -172,3 +189,4 @@ export async function coletar(empresas) {
 
   return { vagas, contador: c, resolvidas, naoResolvidas };
 }
+

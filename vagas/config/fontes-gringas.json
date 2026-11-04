@@ -1,0 +1,121 @@
+{
+  "_nota": "Coletores opcionais do career-ops; licença em src/fontes/careerops/LICENSE. Ajuste consultas e enabled ao seu perfil. Fontes ativas não garantem vagas elegíveis ou disponibilidade do serviço.",
+  "fontes": [
+    {
+      "name": "Built In",
+      "provider": "builtin",
+      "builtin": {
+        "queries": [
+          "product designer",
+          "ux designer"
+        ],
+        "scope": "remote"
+      },
+      "enabled": true
+    },
+    {
+      "name": "Remotli",
+      "provider": "remotli",
+      "careers_url": "https://remotli.ch",
+      "enabled": true
+    },
+    {
+      "name": "We Work Remotely",
+      "provider": "weworkremotely",
+      "enabled": true
+    },
+    {
+      "name": "Jobicy",
+      "provider": "jobicy",
+      "enabled": true
+    },
+    {
+      "name": "Torre",
+      "provider": "torre",
+      "search": "product designer",
+      "enabled": true
+    },
+    {
+      "name": "RemoteOK",
+      "provider": "remoteok",
+      "enabled": true
+    },
+    {
+      "name": "Crypto Jobs",
+      "provider": "cryptocurrencyjobs",
+      "enabled": true
+    },
+    {
+      "name": "Remotive",
+      "provider": "remotive",
+      "enabled": true
+    },
+    {
+      "name": "Working Nomads",
+      "provider": "workingnomads",
+      "enabled": true
+    },
+    {
+      "name": "NoDesk",
+      "provider": "nodesk",
+      "enabled": true
+    },
+    {
+      "name": "Jobspresso",
+      "provider": "jobspresso",
+      "enabled": true
+    },
+    {
+      "name": "Himalayas",
+      "provider": "himalayas",
+      "enabled": true
+    },
+    {
+      "name": "Get on Board",
+      "provider": "getonbrd",
+      "enabled": true
+    },
+    {
+      "name": "Landing.jobs",
+      "provider": "landingjobs",
+      "enabled": true
+    },
+    {
+      "name": "Hacker News Who is hiring",
+      "provider": "hackernews",
+      "enabled": true
+    },
+    {
+      "name": "Welcome to the Jungle",
+      "provider": "wttj",
+      "wttj": {
+        "queries": [
+          "product designer",
+          "ux designer"
+        ]
+      },
+      "enabled": false
+    },
+    {
+      "name": "a16z Speedrun",
+      "provider": "a16z-speedrun-talent",
+      "q": "product designer",
+      "enabled": false
+    },
+    {
+      "name": "4 Day Week",
+      "provider": "4dayweek",
+      "enabled": true
+    },
+    {
+      "name": "The Muse",
+      "provider": "themuse",
+      "enabled": false
+    },
+    {
+      "name": "Generalist World",
+      "provider": "generalist-world",
+      "enabled": false
+    }
+  ]
+}

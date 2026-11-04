@@ -2,16 +2,9 @@
 // o dado do dia ja esta coletado.
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import * as gupy from './fontes/gupy.js';
-import * as remotar from './fontes/remotar.js';
-import * as inhire from './fontes/inhire.js';
-import * as vagasremotas from './fontes/vagasremotas.js';
-import * as colunatech from './fontes/colunatech.js';
-import * as vagasux from './fontes/vagasux.js';
-import * as arc from './fontes/arc.js';
-import * as uxremotetalent from './fontes/uxremotetalent.js';
-import * as ats from './fontes/ats.js';
 import * as apify from './fontes/apify.js';
+import { criarFontes } from './fontes-registro.js';
+import { verificarVersaoGit, formatarVersaoGit } from './versao-git.js';
 import * as ddg from './busca/ddg.js';
 import { validar } from './liveness.js';
 import { juntar, reconciliarCache } from './dedupe.js';
@@ -24,7 +17,7 @@ import * as semantico from './semantico.js';
 import * as arquivo from './arquivo.js';
 import * as quadro from './quadro.js';
 import { readFileSync } from 'node:fs';
-import { perfil, linkedin, DIR_DADOS, RAIZ } from './config.js';
+import { perfil, palavras, linkedin, DIR_DADOS, RAIZ } from './config.js';
 import { hoje, dormir } from './util.js';
 import { fontesAtivas } from './mercado.js';
 
@@ -33,7 +26,6 @@ import { fontesAtivas } from './mercado.js';
 // em 2026-07-30, nenhum dos dois honra `search` nem `category`, e o feed
 // publico da Remotive tem 35 vagas no total. Ver src/fontes/ats.js.
 const empresasAts = JSON.parse(readFileSync(join(RAIZ, 'config', 'empresas-ats.json'), 'utf8')).empresas;
-const atsFonte = { NOME: ats.NOME, coletar: () => ats.coletar(empresasAts) };
 
 // Camada 4: LinkedIn via Apify. So precisa de APIFY_TOKEN no `.env` (ver
 // .env.example): sem APIFY_TASK, dispara o Actor de config/linkedin.json com a
@@ -49,7 +41,7 @@ const apifyFonte = {
 
 // Todas as fontes que existem. Quais entram e decisao do perfil (mercado e
 // fontes_desligadas), em src/mercado.js — nunca comentando linha aqui.
-const TODAS = [gupy, remotar, inhire, vagasremotas, colunatech, vagasux, arc, uxremotetalent, atsFonte];
+const TODAS = criarFontes({ empresasAts, perfil, palavras });
 if (apify.modo(apifyOpcoes) !== 'desligado') {
   TODAS.push(apifyFonte);
 } else {
@@ -68,6 +60,7 @@ const forcar = process.argv.includes('--forcar');
 const semDdg = process.argv.includes('--sem-ddg');
 
 async function main() {
+  console.log(formatarVersaoGit(await verificarVersaoGit({ cwd: RAIZ })));
   const inicio = Date.now();
   const dia = hoje();
   const arqRodada = join(DIR_DADOS, `rodada-${dia}.json`);
@@ -91,6 +84,12 @@ async function main() {
     if (r.status === 'fulfilled') {
       brutas.push(...r.value.vagas);
       contadores.push(r.value.contador);
+      if (r.value.contador?.status) console.log(`    ${nome}: ${r.value.contador.status}`);
+      for (const aviso of r.value.contador?.avisos || []) console.log(`    ${nome}: ${aviso}`);
+      for (const estado of r.value.contador?.fontes || []) console.log(`    ${estado.fonte || estado.nome || 'Importação'}: ${estado.status}${estado.erro ? '; ' + estado.erro : ''}`);
+      if (r.value.porFonte) for (const [fonte, estado] of Object.entries(r.value.porFonte)) {
+        console.log(`    ${fonte}: ${estado.estado || 'coleta'}; ${estado.brutas ?? 0} itens${estado.erro ? '; ' + estado.erro : ''}${estado.aviso ? '; ' + estado.aviso : ''}`);
+      }
     } else {
       contadores.push({ fonte: nome, consultadas: 0, brutas: 0, falhas: 1, erro: String(r.reason?.message || r.reason) });
       console.log(`  ${nome.padEnd(16)} FALHOU: ${r.reason?.message || r.reason}`);
@@ -336,3 +335,4 @@ main().catch((e) => {
   console.error('\nRodada estourou:', e);
   process.exit(1);
 });
+
