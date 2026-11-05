@@ -8,6 +8,23 @@ No GitHub, abra **Watch → Custom → Releases** para acompanhar publicações,
 
 `npm run verificar:versao`, dentro de `vagas/`, compara commits do branch acompanhado com o remoto. Esse comando não consulta releases, não atualiza arquivos e pode informar versão desconhecida numa pasta baixada por ZIP ou num checkout de tag.
 
+## Se você instalou antes da mudança para JobRelay
+
+Faça esta primeira atualização com o assistente. As versões 1.1.0 e 1.1.1 consultam a API pelo nome antigo e recusam redirecionamentos. Depois da renomeação no GitHub, esse endereço devolve um redirecionamento; por isso, essas versões não conseguem instalar a nova release sozinhas. O projeto continua sendo o mesmo repositório, com o mesmo histórico.
+
+Peça ao assistente:
+
+> Atualize minha instalação para JobRelay. Confira a origem e a versão, preserve meus dados e configurações e compare minhas alterações locais. Use https://github.com/caarloshq/jobrelay.git como origem. Aplique a release estável compatível sem apagar arquivos ou substituir meus dados pelos exemplos. Se houver conflito ou histórico divergente, pare e me mostre o que precisa ser resolvido.
+
+Em um checkout sem alterações locais de código e com histórico compatível, os comandos de migração são:
+
+```bash
+git remote set-url origin https://github.com/caarloshq/jobrelay.git
+git pull --ff-only origin main
+```
+
+Não execute a troca de arquivos antes de preservar e conferir suas alterações. Depois desta migração, o atualizador usa o endereço novo. Ele aceita também a URL Git antiga exata por compatibilidade; não aceita outros repositórios.
+
 ## Se você clonou com Git
 
 Peça ao assistente para conferir origem, branch, versão instalada e alterações locais antes de atualizar. Ele deve fazer cópia dos dados, perfis, credenciais e configurações personalizadas e comparar o código de destino. Use uma pasta de cópia dentro do seu projeto e mantenha-a fora de commits públicos. Não use reset, limpeza ou substituição de dados como atualização.
@@ -31,4 +48,4 @@ Depois da atualização, confira a configuração e os registros com os comandos
 
 O mantenedor escolhe um commit revisado, confere os checks, define a tag e escreve notas com mudanças, validação, instruções de atualização e limites. RCs são marcados como pré-release e não como `latest`. Uma release pode apontar para um commit de uma PR sem fundi-la em `main`; nesse caso, as notas precisam informar isso. O pacote é o código público daquela tag: dados de uma instalação nunca são anexados.
 
-Referência: [GitHub Docs — releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases).
+Referência: [GitHub Docs: releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases).

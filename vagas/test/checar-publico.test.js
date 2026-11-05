@@ -21,14 +21,30 @@ function checar(t, conteudo) {
   assert.equal(init.status, 0);
   return spawnSync(process.execPath, [path.join(raiz, 'vagas/scripts/checar-publico.mjs')], { encoding: 'utf8' });
 }
-test('URL canônica pública é permitida sem dispensar dado pessoal na mesma linha', t => {
-  const url = 'https://github.com/caarloshq/job-scrapper.git';
-  assert.equal(checar(t, url).status, 0);
+test('URLs públicas exatas são permitidas sem dispensar dado pessoal na mesma linha', t => {
   const telefone = ['+55', '11', '99999-1111'].join(' ');
-  assert.equal(checar(t, `${url} ${telefone}`).status, 1);
+  for (const url of [
+    'https://github.com/caarloshq/jobrelay',
+    'https://github.com/caarloshq/jobrelay.git',
+    'https://github.com/caarloshq/job-scrapper.git',
+    'https://api.github.com/repos/caarloshq/jobrelay',
+  ]) {
+    assert.equal(checar(t, url).status, 0, url);
+    assert.equal(checar(t, `${url} ${telefone}`).status, 1, url);
+  }
 });
-test('nome protegido fora da URL exata continua bloqueado', t => {
+test('nome protegido e URLs com host ou sufixo alterados continuam bloqueados', t => {
   const nome = ['caar', 'loshq'].join('');
-  assert.equal(checar(t, nome).status, 1);
-  assert.equal(checar(t, `https://github.com/${nome}/job-scrapper-alterado`).status, 1);
+  for (const conteudo of [
+    nome,
+    `https://github.com/${nome}/jobrelay-alterado`,
+    `https://github.com.evil.example/${nome}/jobrelay.git`,
+    `https://evil.example/?next=https://github.com/${nome}/jobrelay.git`,
+    `https://github.com/${nome}/jobrelay.git/extra`,
+    `https://github.com/${nome}/jobrelay.git.evil`,
+    `https://github.com/${nome}/jobrelay.git?token=teste`,
+    `http://github.com/${nome}/jobrelay.git`,
+    `https://github.com/${nome}/job-scrapper.git/extra`,
+    `https://github.com/${nome}/job-scrapper.git.evil`,
+  ]) assert.equal(checar(t, conteudo).status, 1, conteudo);
 });

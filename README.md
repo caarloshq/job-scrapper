@@ -1,4 +1,4 @@
-# Caça-vagas
+# JobRelay
 
 Busque vagas para o seu perfil, organize as oportunidades e prepare currículos com a ajuda do Claude Code ou do Codex. Você escolhe entre só mapear vagas e configurar candidaturas assistidas pela sua conexão com o Chrome.
 
@@ -12,15 +12,15 @@ Você precisa de **Node.js 20 ou mais recente, Python 3, Git e Claude Code ou Co
 
 Cole no assistente:
 
-> Instale https://github.com/caarloshq/job-scrapper em uma pasta própria, sem sobrescrever projetos existentes. Leia AGENTS.md, ONBOARDING.md e docs/instalar-com-agente.md. Faça o onboarding comigo: profissão, currículo, filtros, quadro local ou minha conexão Notion, e escolha entre só mapear vagas ou configurar candidaturas com minha conexão Chrome. Não peça credenciais no chat. Se eu escolher autonomia, crie uma tarefa nativa a cada quatro horas apontando para vagas/RODADA-DIARIA.md, com Apify paga no máximo uma vez por dia. Mostre no chat o prompt, a tarefa criada e o próximo horário. Se não houver agendador, entregue o prompt e informe que a tarefa ainda não foi criada. Preserve meus dados nas atualizações e confirme antes de qualquer gasto ou ação sem autorização.
+> Instale https://github.com/caarloshq/jobrelay em uma pasta própria, sem sobrescrever projetos existentes. Leia AGENTS.md, ONBOARDING.md e docs/instalar-com-agente.md. Faça o onboarding comigo: profissão, currículo, filtros, quadro local ou minha conexão Notion, e escolha entre só mapear vagas ou configurar candidaturas com minha conexão Chrome. Não peça credenciais no chat. Se eu escolher autonomia, crie uma tarefa nativa a cada quatro horas apontando para vagas/RODADA-DIARIA.md, com Apify paga no máximo uma vez por dia. Mostre no chat o prompt, a tarefa criada e o próximo horário. Se não houver agendador, entregue o prompt e informe que a tarefa ainda não foi criada. Preserve meus dados nas atualizações e confirme antes de qualquer gasto ou ação sem autorização.
 
 O assistente conduz a configuração; você fornece seus dados e confirma as escolhas. O [guia de instalação com agente](docs/instalar-com-agente.md) explica as conexões e a conclusão do onboarding.
 
 ## Para instalar pelo terminal
 
 ```bash
-git clone https://github.com/caarloshq/job-scrapper.git caca-vagas
-cd caca-vagas/vagas
+git clone https://github.com/caarloshq/jobrelay.git jobrelay
+cd jobrelay/vagas
 npm run setup
 ```
 
@@ -43,7 +43,7 @@ A tarefa depende do computador, do assistente e das conexões disponíveis. O fo
 Para uma rodada manual, depois do onboarding:
 
 ```bash
-cd caca-vagas/vagas
+cd jobrelay/vagas
 npm run rodada
 npm run quadro
 ```
@@ -54,7 +54,9 @@ A nota das vagas organiza a leitura; ela não representa sua chance de contrata�
 
 ## Receba e instale atualizações
 
-As versões ficam em [Releases](https://github.com/caarloshq/job-scrapper/releases). Para receber avisos, use **Watch → Custom → Releases** no GitHub, conforme as opções da sua conta.
+As versões ficam em [Releases](https://github.com/caarloshq/jobrelay/releases). Para receber avisos, use **Watch → Custom → Releases** no GitHub, conforme as opções da sua conta.
+
+Se você instalou o projeto com o nome antigo, siga a [migração para JobRelay](docs/atualizacao.md#se-você-instalou-antes-da-mudança-para-jobrelay). Essa primeira atualização precisa da ajuda do assistente.
 
 Instalações feitas com Git verificam releases estáveis antes da rodada e podem se atualizar quando a origem, o histórico e a operação permitem. O atualizador preserva dados e configurações pessoais; mudanças locais de código ou uma operação pendente podem bloquear a atualização. Quem baixou ZIP segue a migração assistida do [guia de atualização](docs/atualizacao.md). Esse guia também explica como atualizar manualmente.
 

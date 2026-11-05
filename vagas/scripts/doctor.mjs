@@ -40,7 +40,7 @@ async function checarFonte(nome, url, opcoes = {}) {
   }
 }
 
-console.log('\nCaca-vagas — doctor\n' + '='.repeat(52) + '\n\nAmbiente');
+console.log('\nJobRelay — doctor\n' + '='.repeat(52) + '\n\nAmbiente');
 
 checar('Node >= 20', () => {
   const maior = Number(process.versions.node.split('.')[0]);

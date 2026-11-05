@@ -1,4 +1,4 @@
-# Caça-Vagas
+# JobRelay
 
 Todo dia de manhã, isto procura vaga de Product Designer remota, lê cada anúncio novo contra o seu currículo, dá uma nota de 0 a 100 e publica no Notion. Nas que passam de 75%, já deixa o currículo adaptado pronto.
 

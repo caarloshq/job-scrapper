@@ -128,7 +128,7 @@ export function estado() {
 
 function imprimir() {
   const e = estado();
-  console.log('\nCaça-vagas — onboarding\n' + '='.repeat(52) + '\n');
+  console.log('\nJobRelay — onboarding\n' + '='.repeat(52) + '\n');
   console.log(`Perfil ${e.configurado ? 'CONFIGURADO' : 'ainda NÃO configurado'}. Roteiro: ONBOARDING.md na raiz.\n`);
   for (const b of e.blocos) {
     console.log(`[${b.ok ? '  ok  ' : ' falta'}] ${String(b.n)}. ${b.nome.padEnd(30)} ${b.detalhe}`);

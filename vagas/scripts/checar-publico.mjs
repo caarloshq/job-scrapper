@@ -36,6 +36,23 @@ const PADROES = [
   /\b(?!123\.456\.789-00)\d{3}\.\d{3}\.\d{3}-\d{2}\b/,
 ];
 
+// Só endereços completos do projeto podem conter o nome da conta pública.
+// O URL antigo continua válido para instalações feitas antes da renomeação.
+const URLS_PUBLICAS = new Set([
+  'https://github.com/caarloshq/jobrelay',
+  'https://github.com/caarloshq/jobrelay.git',
+  'https://github.com/caarloshq/job-scrapper.git',
+  'https://api.github.com/repos/caarloshq/jobrelay',
+]);
+const URL_HTTPS = /(^|[\s('"`])https:\/\/[^\s'"`<>),\]}]+/g;
+function omitirUrlPublica(linha) {
+  return linha.replace(URL_HTTPS, (trecho, prefixo) => {
+    const candidato = trecho.slice(prefixo.length);
+    const url = candidato.replace(/[.,;:!?]+$/, '');
+    return prefixo + (URLS_PUBLICAS.has(url) ? 'REPOSITORIO_PUBLICO' : candidato);
+  });
+}
+
 // README, LICENSE, PRODUCT.md e DESIGN.md citam o autor de proposito (credito, licenca e
 // origem das decisoes de produto e de design). O resto do repositorio, nao.
 const IGNORAR_ARQ = new Set(['.env', 'checar-publico.mjs', '.DS_Store', 'README.md', 'LICENSE', 'PRODUCT.md', 'DESIGN.md']);
@@ -60,7 +77,7 @@ for (const arq of listarVersionaveis()) {
   const linhas = readFileSync(arq, 'utf8').split('\n');
   linhas.forEach((l, i) => {
     for (const p of PADROES) {
-      if (p.test(l.replace(/https:\/\/(?:github\.com\/caarloshq\/job-scrapper(?:\.git)?|api\.github\.com\/repos\/caarloshq\/job-scrapper)(?=[/\s'"`),]|$)/g, 'REPOSITORIO_PUBLICO'))) {
+      if (p.test(omitirUrlPublica(l))) {
         problemas++;
         console.log(`  ${relative(REPO, arq)}:${i + 1}  ${p}  ${l.trim().slice(0, 80)}`);
         break;

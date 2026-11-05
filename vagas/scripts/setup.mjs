@@ -8,7 +8,7 @@ import { RAIZ, DIR_DADOS, perfil } from '../src/config.js';
 
 console.log(formatarVersaoGit(await verificarVersaoGit({ cwd: RAIZ })));
 
-console.log('\nCaca-vagas — setup\n' + '='.repeat(52) + '\n');
+console.log('\nJobRelay — setup\n' + '='.repeat(52) + '\n');
 
 const maior = Number(process.versions.node.split('.')[0]);
 if (maior < 20) {

@@ -1,4 +1,4 @@
-# Caça-vagas: instruções para o agente
+# JobRelay: instruções para o agente
 
 Você está na raiz de um projeto que procura vaga remota, pontua contra o currículo de quem usa, e adapta o currículo. Claude Code e Codex leem este arquivo. Não existe outro roteiro.
 

@@ -1,5 +1,5 @@
 ---
-name: Caça-vagas
+name: JobRelay
 description: Sistema visual das superfícies locais do projeto (onboarding e quadro), light mode, acento azul único
 colors:
   bg: "#FAFAFA"
@@ -89,7 +89,7 @@ components:
 
 # Design
 
-> Sistema das superfícies locais do Caça-vagas: o formulário de onboarding e o quadro. Escrito em 14 de Setembro de 2026 a partir de duas direções ("light mode" e "botões azuis") e derivado do sistema pessoal do Carlos Henrique (Montserrat, escala neutra de dez degraus, raios por elemento). O azul sai da família que já existia lá como tag (`#CAD6FF` sobre `#000766`), estendida num acento de ação.
+> Sistema das superfícies locais do JobRelay: o formulário de onboarding e o quadro. Escrito em 14 de Setembro de 2026 a partir de duas direções ("light mode" e "botões azuis") e derivado do sistema pessoal do Carlos Henrique (Montserrat, escala neutra de dez degraus, raios por elemento). O azul sai da família que já existia lá como tag (`#CAD6FF` sobre `#000766`), estendida num acento de ação.
 
 ## Visual identity
 

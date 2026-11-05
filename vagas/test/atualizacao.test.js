@@ -10,7 +10,7 @@ const base = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../data
 fs.mkdirSync(base, { recursive: true });
 const comando = (raiz, ...args) => execFileSync('git', ['-C', raiz, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 
-function fixture(t, alterarRelease = raiz => fs.writeFileSync(path.join(raiz, 'vagas/src/app.js'), 'release\n')) {
+function fixture(t, alterarRelease = raiz => fs.writeFileSync(path.join(raiz, 'vagas/src/app.js'), 'release\n'), origem = 'https://github.com/caarloshq/jobrelay.git') {
   const raiz = fs.mkdtempSync(path.join(base, 'fixture-'));
   t.after(() => fs.rmSync(raiz, { recursive: true, force: true }));
   comando(raiz, 'init', '-b', 'main');
@@ -32,7 +32,7 @@ function fixture(t, alterarRelease = raiz => fs.writeFileSync(path.join(raiz, 'v
   const destino = comando(raiz, 'rev-parse', 'HEAD');
   const tagSha = comando(raiz, 'rev-parse', 'v1.2.0');
   comando(raiz, 'reset', '--hard', inicial);
-  comando(raiz, 'remote', 'add', 'origin', 'https://github.com/caarloshq/job-scrapper.git');
+  comando(raiz, 'remote', 'add', 'origin', origem);
   const opcoes = {
     raiz,
     consultarRelease: async () => ({ tag: 'v1.2.0', tagSha }),
@@ -48,6 +48,29 @@ test('instala uma release estável por avanço linear e registra resultado', asy
   assert.equal(comando(f.raiz, 'rev-parse', 'HEAD'), f.destino);
   assert.equal(JSON.parse(fs.readFileSync(path.join(f.raiz, 'vagas/data/atualizacao.json'))).status, 'atualizado');
   assert.equal(fs.existsSync(path.join(f.raiz, 'vagas/data/operacao/.atualizacao.lock')), false);
+});
+
+test('origem antiga exata instala release da API canônica nova', async t => {
+  const antiga = 'https://github.com/caarloshq/job-scrapper.git';
+  const f = fixture(t, undefined, antiga);
+  const chamadas = [];
+  const fetchImpl = async (url, opcoes) => {
+    chamadas.push({ url, opcoes });
+    const corpo = url.endsWith('/releases/latest')
+      ? { tag_name: 'v1.2.0', draft: false, prerelease: false }
+      : { ref: 'refs/tags/v1.2.0', object: { type: 'commit', sha: comando(f.raiz, 'rev-parse', 'v1.2.0') } };
+    return { ok: true, url, headers: new Headers(), body: new Blob([JSON.stringify(corpo)]).stream() };
+  };
+  const resultado = await atualizarAutomaticamente({ ...f.opcoes, consultarRelease: null, fetchImpl });
+  assert.equal(resultado.status, 'atualizado');
+  const api = 'https://api.github.com/repos/caarloshq/jobrelay';
+  assert.deepEqual(chamadas.map(c => c.url), [
+    `${api}/releases/latest`,
+    `${api}/git/ref/tags/v1.2.0`,
+  ]);
+  assert.ok(chamadas.every(c => c.opcoes.redirect === 'error' && c.opcoes.headers['User-Agent'] === 'jobrelay-update'));
+  assert.equal(comando(f.raiz, 'remote', 'get-url', 'origin'), antiga);
+  assert.equal(comando(f.raiz, 'rev-parse', 'HEAD'), f.destino);
 });
 
 test('falha na aplicação preserva a trava e bloqueia próxima tentativa', async t => {
@@ -133,12 +156,25 @@ test('bloqueia tag alterada entre consulta e busca', async t => {
   assert.equal(comando(f.raiz, 'rev-parse', 'HEAD'), f.inicial);
 });
 
-test('bloqueia origem diferente sem consultar rede', async t => {
-  const f = fixture(t);
-  comando(f.raiz, 'remote', 'set-url', 'origin', 'https://github.com/outro/projeto.git');
-  const resultado = await atualizarAutomaticamente(f.opcoes);
-  assert.equal(resultado.motivo, 'ORIGEM_INVALIDA');
-  assert.equal(comando(f.raiz, 'rev-parse', 'HEAD'), f.inicial);
+test('recusa origens fora das duas URLs HTTPS exatas antes de consultar release', async t => {
+  const conta = ['caar', 'loshq'].join('');
+  for (const origem of [
+    'https://github.com/outro/projeto.git',
+    `https://github.com/${conta}/jobrelay`,
+    `https://github.com/${conta}/jobrelay.git/extra`,
+    `https://github.com/${conta}/jobrelay.git.evil`,
+    `https://github.com/${conta}/jobrelay.git@evil.example`,
+    `https://github.com.evil.example/${conta}/jobrelay.git`,
+    `http://github.com/${conta}/jobrelay.git`,
+    `https://github.com/${conta}/job-scrapper.git/extra`,
+    `https://github.com/${conta}/job-scrapper.git.evil`,
+  ]) {
+    const f = fixture(t);
+    comando(f.raiz, 'remote', 'set-url', 'origin', origem);
+    const resultado = await atualizarAutomaticamente({ ...f.opcoes, consultarRelease: async () => { throw new Error('release consultada'); } });
+    assert.equal(resultado.motivo, 'ORIGEM_INVALIDA', origem);
+    assert.equal(comando(f.raiz, 'rev-parse', 'HEAD'), f.inicial, origem);
+  }
 });
 
 test('RC não entra pelo caminho automático', async t => {

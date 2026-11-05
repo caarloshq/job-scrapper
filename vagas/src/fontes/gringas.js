@@ -3,7 +3,7 @@
 // As fontes em si sao copia do upstream (careerops/CREDITO.md) e continuam
 // falando o contrato delas: fetch(entrada, ctx) devolve {title, url, company,
 // location, description?, postedAt?}. Este arquivo so traduz para a vaga do
-// Caca-Vagas e aplica as duas portas que o career-ops nao tem do nosso jeito:
+// JobRelay aplica as duas portas que o career-ops nao tem do nosso jeito:
 // o titulo da area e o "aceita Brasil" de intl.js.
 //
 // O filtro de elegibilidade lê a região inteira; remoto não implica Brasil/LATAM.
@@ -50,7 +50,7 @@ function idDaVaga(url, titulo) {
   return createHash('sha1').update(chave).digest('hex').slice(0, 12);
 }
 
-/** @returns {object|null} a vaga no formato do Caca-Vagas, ou null se nao serve */
+/** @returns {object|null} a vaga no formato do JobRelay, ou null se nao serve */
 export function paraVaga(item, entrada, idProvedor, criterios = palavras) {
   if (!item?.url || !interessa(item.title, criterios)) return null;
   const descricao = limparHtml(item.description || '');

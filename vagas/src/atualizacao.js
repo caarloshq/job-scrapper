@@ -7,8 +7,11 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
 const executar = promisify(execFile);
-const ORIGEM = 'https://github.com/caarloshq/job-scrapper.git';
-const API = 'https://api.github.com/repos/caarloshq/job-scrapper';
+const ORIGEM = 'https://github.com/caarloshq/jobrelay.git';
+// Instalações anteriores à renomeação conservam esta URL no Git. O redirect
+// oficial do GitHub mantém o histórico; qualquer outra origem é recusada.
+const ORIGENS_PERMITIDAS = new Set([ORIGEM, 'https://github.com/caarloshq/job-scrapper.git']);
+const API = 'https://api.github.com/repos/caarloshq/jobrelay';
 const TAG = /^v[0-9]+\.[0-9]+\.[0-9]+(?:\+[0-9A-Za-z.-]+)?$/;
 const SHA = /^[a-f0-9]{40}$/;
 const MAX_RESPOSTA = 128 * 1024;
@@ -58,7 +61,7 @@ async function git(raiz, ...args) {
 async function respostaJson(url, fetchImpl) {
   const resposta = await fetchImpl(url, {
     method: 'GET', redirect: 'error', signal: AbortSignal.timeout(TIMEOUT_REDE),
-    headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'job-scrapper-update' },
+    headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'jobrelay-update' },
   });
   if (!resposta.ok) falhar('RELEASE_INDISPONIVEL');
   if (new URL(resposta.url).origin !== 'https://api.github.com') falhar('ORIGEM_API_INVALIDA');
@@ -161,7 +164,7 @@ export async function atualizarAutomaticamente({ raiz, fetchImpl = globalThis.fe
     if (!fs.existsSync(path.join(projeto, '.git'))) falhar('RAIZ_GIT_INVALIDA');
     seguroNoDisco(path.join(projeto, '.git'));
     if (await git(projeto, 'rev-parse', '--show-toplevel') !== projeto) falhar('RAIZ_GIT_INVALIDA');
-    if (await git(projeto, 'remote', 'get-url', 'origin') !== ORIGEM) falhar('ORIGEM_INVALIDA');
+    if (!ORIGENS_PERMITIDAS.has(await git(projeto, 'remote', 'get-url', 'origin'))) falhar('ORIGEM_INVALIDA');
     try {
       if (await git(projeto, 'config', '--local', '--get-regexp', '^filter\\.')) falhar('FILTRO_LOCAL_ATIVO');
     } catch (erro) { if (erro.code !== 1) throw erro; }

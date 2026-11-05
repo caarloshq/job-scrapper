@@ -1,8 +1,8 @@
-# Caça-Vagas — instruções do subsistema
+# JobRelay — instruções do subsistema
 
-> O radar do Caça-vagas. As regras do projeto valem aqui, em especial a **Regra 1** (nunca inventar). O roteiro de primeiro uso está em [`../ONBOARDING.md`](../ONBOARDING.md).
+> O radar do JobRelay. As regras do projeto valem aqui, em especial a **Regra 1** (nunca inventar). O roteiro de primeiro uso está em [`../ONBOARDING.md`](../ONBOARDING.md).
 >
-> **A rodada é a tarefa agendada `caca-vagas-diario`, 09:05, DIA SIM DIA NÃO** (mudou em 2026-08-25, era todo dia). Ela agora tem duas metades: coletar e publicar, e **conduzir as candidaturas da meta registrada em `data/candidaturas.json`** ([`RODADA-DIARIA.md`](RODADA-DIARIA.md) §8). Ela não contém lógica: aponta para [`RODADA-DIARIA.md`](RODADA-DIARIA.md), que é onde o processo é mantido. Divergiu? O runbook vence.
+> **A rodada recorrente é opcional e depende da escolha de autonomia no onboarding.** Quando a pessoa a ativa, o assistente cria uma tarefa nativa a cada quatro horas apontando para [`RODADA-DIARIA.md`](RODADA-DIARIA.md). O formulário só entrega o prompt; não cria a tarefa. O runbook define a execução e as candidaturas dependem das autorizações da própria instalação.
 
 ## Estado real, em 2026-07-30
 
@@ -21,7 +21,7 @@ Leia isto antes de confiar em qualquer promessa deste arquivo. O `critic` pegou 
 | Camada 2 (`site:`) | ⚠️ **só com `WebSearch`**, ver abaixo |
 | Filtro de disciplina e de marketing | ✅ título, empresa e abertura da descrição |
 | **Quadro local** | ✅ `data/quadro.json`, escrito por `src/quadro.js`. A rodada registra as aprovadas; `npm run quadro` abre no navegador. Notion virou caso particular: `espelhar()` no mesmo arquivo |
-| Rodada diária agendada | ✅ `caca-vagas-diario`, 09:05, executa [`RODADA-DIARIA.md`](RODADA-DIARIA.md) |
+| Rodada recorrente | ⚠️ opt-in no onboarding; o assistente confirma a criação da tarefa nativa que executa [`RODADA-DIARIA.md`](RODADA-DIARIA.md) |
 | Gerar currículo PDF **e DOCX** | ✅ `generate_resume.py`, formato pela extensão. `reportlab` e `python-docx` instalados |
 | Modelo de e-mail para enviar o currículo | ✅ `../Skills/adapt-resume/modelos-email.md`, seis modelos. **Texto pronto, envio na mão** |
 | Currículo automático acima de 75% | ✅ corte em `config/perfil.json`, executado na rodada |

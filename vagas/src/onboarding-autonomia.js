@@ -51,7 +51,7 @@ export function instrucaoOnboarding({ fonteEstado, databaseId, politica }) {
     ? 'Depois de concluir o onboarding, crie no agendador nativo do assistente uma tarefa recorrente a cada 4 horas. Use vagas/RODADA-DIARIA.md como única fonte do processo. Respeite no máximo uma execução da Apify por dia, mesmo com quatro ou mais rodadas. Mostre no chat a tarefa criada e seu próximo horário. Se o agendador não estiver disponível, entregue o prompt pronto no chat e informe que a tarefa ainda não foi criada. Ela depende de o computador e as conexões estarem disponíveis; não prometa execução com o computador desligado.'
     : 'Não crie tarefa recorrente; farei as rodadas manualmente.';
   return [
-    'Quero concluir o onboarding do Caça-vagas. Leia AGENTS.md, ONBOARDING.md e rode `cd vagas && npm run onboarding`; não repergunte blocos marcados ok.',
+    'Quero concluir o onboarding do JobRelay. Leia AGENTS.md, ONBOARDING.md e rode `cd vagas && npm run onboarding`; não repergunte blocos marcados ok.',
     'Use Skills/adapt-resume/materiais-fonte/ para montar meu currículo base. Entreviste antes de escrever fatos e deixe o currículo para minha conferência. Ajuste vagas/config/palavras-chave.json à minha profissão. Depois rode `npm run onboarding -- --concluir`.',
     fonte,
     candidatura,

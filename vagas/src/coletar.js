@@ -77,7 +77,7 @@ async function main() {
     return;
   }
 
-  console.log(`\nCaca-vagas — rodada de ${dia}\n${'='.repeat(52)}`);
+  console.log(`\nJobRelay — rodada de ${dia}\n${'='.repeat(52)}`);
 
   // ---------- Camada 1: API ----------
   console.log('\n[camada 1] API');

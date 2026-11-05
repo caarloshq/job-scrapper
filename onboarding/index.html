@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Caça-vagas · Onboarding</title>
+<title>JobRelay · Onboarding</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
@@ -137,7 +137,7 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="nome">Caça-vagas</div>
+    <div class="nome">JobRelay</div>
     <div class="local">Formulário local · dados salvos neste computador</div>
   </header>
 
@@ -613,7 +613,7 @@
 
     const instrucao = estado.instrucao || 'Recarregue a página para receber a instrução completa.';
     $('#instrucao').value = instrucao;
-    const resumoMd = ['# Onboarding do Caça-vagas', '', `Salvo em ${new Date().toLocaleDateString('pt-BR')}.`, '', ...linhas.map(([k, v]) => `- **${k}:** ${v || '(vazio)'}`), '', '## Instrução para o assistente', '', '```', instrucao, '```', ''].join('\n');
+    const resumoMd = ['# Onboarding do JobRelay', '', `Salvo em ${new Date().toLocaleDateString('pt-BR')}.`, '', ...linhas.map(([k, v]) => `- **${k}:** ${v || '(vazio)'}`), '', '## Instrução para o assistente', '', '```', instrucao, '```', ''].join('\n');
     $('#baixar').href = URL.createObjectURL(new Blob([resumoMd], { type: 'text/markdown;charset=utf-8' }));
   }
   $('#copiar').addEventListener('click', async () => {
