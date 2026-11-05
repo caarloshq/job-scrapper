@@ -12,6 +12,9 @@ import { join, basename, extname } from 'node:path';
 import { spawnSync, spawn } from 'node:child_process';
 import { createServer } from 'node:http';
 import { RAIZ, perfil, palavras } from '../src/config.js';
+import { DIR_DADOS } from '../src/config.js';
+import { configuracao as fonteConfigurada, selecionar as selecionarFonte } from '../src/fonte-estado.js';
+import { instrucaoOnboarding, lerPolitica, normalizarEscolhas, salvarPolitica } from '../src/onboarding-autonomia.js';
 
 console.log(formatarVersaoGit(await verificarVersaoGit({ cwd: RAIZ })));
 import { validar as validarMercado, idiomaDoCurriculo } from '../src/mercado.js';
@@ -93,6 +96,8 @@ function extrair() {
 
 export function estado() {
   const cand = existsSync(ARQ_CAND) ? lerJson(ARQ_CAND) : {};
+  const politica = lerPolitica(DIR_DADOS);
+  const fonte = fonteConfigurada();
   const basePt = existsSync(join(DIR_ADAPT, 'base_content_pt.json')) ? lerJson(join(DIR_ADAPT, 'base_content_pt.json')) : null;
   const baseEn = existsSync(join(DIR_ADAPT, 'base_content_en.json')) ? lerJson(join(DIR_ADAPT, 'base_content_en.json')) : null;
   // Renomear o exemplo nao basta: a impressao digital sao as empresas e o
@@ -114,7 +119,7 @@ export function estado() {
     { n: 3, nome: 'Currículo e LinkedIn', ok: !ehExemplo(baseDoIdioma), detalhe: ehExemplo(baseDoIdioma) ? `base_content_${idioma}.json ainda é o exemplo fictício · materiais: ${brutos.length} arquivo(s), ${extraidos.length} extraído(s)` : `base_content_${idioma}.json é da pessoa` },
     { n: 4, nome: 'Profissão e termos de busca', ok: palavras.termo_busca_larga !== 'designer' || perfil.profissao_confirmada === true, detalhe: palavras.termo_busca_larga === 'designer' && !perfil.profissao_confirmada ? 'palavras-chave.json ainda é o padrão de design' : `termo largo: ${palavras.termo_busca_larga}` },
     { n: 5, nome: 'Perfil e salário', ok: Number.isFinite(perfil.salario?.minimo_mensal_brl) && perfil.salario_confirmado === true, detalhe: perfil.salario_confirmado ? `piso R$ ${perfil.salario.minimo_mensal_brl}/mês` : 'piso e referência ainda são os valores de exemplo' },
-    { n: 6, nome: 'Candidatura automática', ok: true, detalhe: cand.autorizado ? 'LIGADA, autorizada pela pessoa' : 'desligada (padrão). Liga só com autorizado: true no perfil de candidatura' },
+    { n: 6, nome: 'Quadro e autonomia', ok: true, detalhe: `${fonte.fonte === 'notion' ? 'Notion' : 'local'} · ${politica.modoCandidatura === 'mapear' ? 'só mapear' : 'Chrome assistido a configurar'} · ${politica.ativa ? 'agendamento de 4h solicitado' : 'rodada manual'}${cand.autorizado ? ' · perfil de candidatura autorizado separadamente' : ''}` },
     { n: 7, nome: 'Apify (LinkedIn)', ok: Boolean(process.env.APIFY_TOKEN), detalhe: process.env.APIFY_TOKEN ? (process.env.APIFY_TASK ? 'token presente; busca pela sua Task' : 'token presente; busca de config/linkedin.json') : 'sem token: a fonte LinkedIn fica de fora até você colar APIFY_TOKEN no vagas/.env' },
   ];
   const proximo = blocos.find((b) => !b.ok && b.n !== 7) || (blocos[6].ok ? null : blocos[6]);
@@ -179,6 +184,8 @@ function estadoParaTela() {
   const p = lerJson(ARQ_PERFIL);
   const env = lerEnv();
   const cand = existsSync(ARQ_CAND) ? lerJson(ARQ_CAND) : {};
+  const fonteEstado = fonteConfigurada();
+  const politica = lerPolitica(DIR_DADOS);
   mkdirSync(DIR_MATERIAIS, { recursive: true });
   const materiais = ['curriculo', 'linkedin'].filter((t) => existsSync(join(DIR_MATERIAIS, `${t}.pdf`)) && statSync(join(DIR_MATERIAIS, `${t}.pdf`)).size > 0).map((t) => ({
     tipo: t, nome: `${t}.pdf`, tamanho: statSync(join(DIR_MATERIAIS, `${t}.pdf`)).size, extraido: existsSync(join(DIR_MATERIAIS, `${t}.extraido.txt`)),
@@ -187,6 +194,9 @@ function estadoParaTela() {
     perfil: p,
     env: { token: Boolean(env.APIFY_TOKEN), task: env.APIFY_TASK || '' },
     candidatura: { autorizado: cand.autorizado === true },
+    fonteEstado,
+    politica,
+    instrucao: instrucaoOnboarding({ fonteEstado: fonteEstado.fonte, databaseId: fonteEstado.databaseId, politica }),
     materiais,
     blocos: estado().blocos,
   };
@@ -233,6 +243,9 @@ function validarPasso(passo, d = {}) {
     const modelos = [d.aceita_remoto !== false, d.aceita_hibrido === true, d.aceita_presencial === true];
     if (!modelos.some(Boolean)) return 'Marque ao menos um modelo de trabalho.';
     if ((d.aceita_hibrido === true || d.aceita_presencial === true) && !texto(d.cidade)) return 'Híbrido e presencial precisam da sua cidade.';
+  }
+  if (passo === 6) {
+    try { normalizarEscolhas(d); } catch (erro) { return erro.message; }
   }
   if (passo === 7) {
     if (d.token != null && d.token !== '' && !/^[A-Za-z0-9_-]{10,200}$/.test(String(d.token).trim())) return 'Token inválido: só letras, números, hífen e sublinhado.';
@@ -288,7 +301,12 @@ function salvarPasso(passo, d = {}) {
     const li = lerJson(ARQ_LINKEDIN); li.busca.remoto = !(p.aceita_hibrido || p.aceita_presencial); gravarJson(ARQ_LINKEDIN, li);
     p.salario_confirmado = true;
   } else if (passo === 6) {
-    if (existsSync(ARQ_CAND)) { const c = lerJson(ARQ_CAND); c.autorizado = d.autorizado === true; c.autorizado_em = c.autorizado ? new Date().toISOString().slice(0, 10) : null; gravarJson(ARQ_CAND, c); }
+    const escolhas = normalizarEscolhas(d);
+    selecionarFonte(escolhas.fonteEstado, escolhas.databaseId);
+    salvarPolitica(DIR_DADOS, escolhas.politica);
+    // Escolher Chrome não é autorização para preencher ou enviar. A revisão
+    // individual do perfil e das respostas acontece depois, com o assistente.
+    if (existsSync(ARQ_CAND)) { const c = lerJson(ARQ_CAND); c.autorizado = false; c.autorizado_em = null; gravarJson(ARQ_CAND, c); }
   } else if (passo === 7) {
     const token = d.token ? String(d.token).trim() : '';
     gravarEnv({ APIFY_TOKEN: token });

@@ -4,6 +4,14 @@ Este arquivo decide como
 transformar fatos em respostas. O perfil guarda fatos e autorizações; o banco
 guarda perguntas, textos e o alcance de cada aprovação.
 
+## O registro obrigatório é o Markdown do que foi preenchido
+
+Depois de preencher e conferir um campo, o maestro/aplicador salva a pergunta e o texto literal em `../revisoes/respostas.md`, inclusive quando a candidatura continua em rascunho. Use `npm run registrar:respostas` com o pacote por stdin ou `--arquivo`, conforme o protocolo operacional. `preenchida:true` significa que o aplicador conferiu o valor no formulário; o comando não captura o Chrome. Se a gravação falhar, não avançar para transmissão da candidatura até resolver.
+
+Esse é o único novo registro obrigatório do preenchimento. Não criar outro banco ou JSON por causa desse passo. Bancos, perfis, filas e históricos já existentes continuam preservados para fatos, autorizações, retomada e validações das candidaturas que já os usam. O Markdown guarda texto exato e não substitui autorização, prova de envio nem a fonte dos fatos. Não criar `vagas/respostas.md`, que pode colidir com este arquivo em sistemas sem distinção de caixa.
+
+Entrada do comando: `contexto` com empresa, vaga, id e data YYYY-MM-DD; `campos` com pergunta, texto e `preenchida:true`. Campos não preenchidos ficam fora do texto dado. Respostas multilinha são preservadas integralmente; repetição idêntica não duplica; correção posterior acrescenta histórico. Documento e autodeclaração sensível usam somente `referenciaPrivada`, sem copiar valor. As pendências existentes continuam em seus controles, sem inventar resposta no Markdown.
+
 ## Fontes e limites
 
 - Trajetória: `../Skills/adapt-resume/base_content_*.json` e materiais-fonte.
@@ -17,6 +25,12 @@ Ausência no currículo significa **não confirmado**. Não demonstra ausência 
 parentesco, participação societária, experiência anterior, idioma ou contribuição
 open source. Um vínculo confirmado para uma empresa não responde sobre outra.
 Cargo anterior não é empresa atual; último salário não é remuneração atual.
+
+## Dados já existentes e perguntas pendentes
+
+O perfil continua sendo a fonte dos fatos e autorizações. O banco e os históricos estruturados já usados pela instalação podem ser preservados e consultados; eles não são um novo requisito para salvar o que foi preenchido. O maestro mantém os bloqueios de perguntas sem resposta e distingue pendente, respondida e aplicada. Omissão numa lista nova não resolve uma pendência. A confirmação de envio exige prova externa; não é inferida de um Markdown ou JSON.
+
+O registrador Markdown não captura o navegador nem descobre campo omitido pelo aplicador. Cabe ao revisor comparar as perguntas e textos com os campos visíveis. Bancos/perfis/quadro de exemplo são versionados na distribuição; revise arquivos personalizados antes de publicar sua cópia. O histórico local e `revisoes/` ficam ignorados no público.
 
 ## O que se reutiliza
 
@@ -71,12 +85,10 @@ IA no processo continuam fora dessa autorização.
 ## Antes de preencher e enviar
 
 1. Executar `node scripts/validar-respostas.mjs` para conferir a integridade do banco.
-2. Para cada resposta efetivamente usada, salvar em
-   `data/respostas-enviadas/<id-seguro>-<data>.json` o texto exato da pergunta e da
-   resposta, fonte, escopo, idioma, data e situação da aprovação. Excluir documentos
+2. Para cada resposta efetivamente preenchida, salvar o texto exato no Markdown pelo comando acima. Se a candidatura já usa registro em `data/respostas-enviadas/`, mantê-lo coerente sem alterar o que foi enviado; não criar novo JSON apenas para cumprir o salvamento em MD. Excluir documentos
    e autodeclarações sensíveis do registro; guardar somente a indicação de que
    foram tratados no perfil privado.
-3. Executar `node scripts/validar-respostas.mjs --candidatura <arquivo.json>`.
+3. Quando houver registro estruturado da candidatura, executar `node scripts/validar-respostas.mjs --candidatura <arquivo.json>`.
    Esse comando verifica estrutura e bloqueios conhecidos, não comprova os fatos
    nem substitui a leitura editorial e a conferência no formulário.
 4. Comparar o texto registrado com o campo preenchido; conferir currículo, opções,

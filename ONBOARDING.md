@@ -2,7 +2,7 @@
 
 Você vai informar o que procura e adicionar seu currículo em um formulário no navegador. Depois, o Claude Code ou o Codex ajuda a preparar seu currículo base e concluir a configuração.
 
-Tenha seu currículo em PDF e acesso a um desses assistentes. A conexão com o LinkedIn é opcional e pode ficar para depois.
+Tenha seu currículo em PDF e acesso a um desses assistentes. A conexão com o LinkedIn é opcional e pode ficar para depois. Se preferir que o assistente faça a instalação e acompanhe a configuração desde o começo, use o [guia de instalação com agente](docs/instalar-com-agente.md).
 
 ## Abra o formulário
 
@@ -40,9 +40,13 @@ Informe o menor valor mensal que você considera, em reais, e sua remuneração 
 
 Escolha se aceita trabalho remoto, híbrido ou presencial. Para as duas últimas opções, informe a cidade. Anúncios sem salário podem continuar na seleção para você avaliar.
 
-## 6. Escolha se quer configurar o preenchimento de candidaturas
+## 6. Escolha quadro, candidaturas e autonomia
 
-Você pode deixar a opção desligada e continuar usando a busca, o quadro e os currículos. Se marcar a opção, ainda será necessário completar e revisar seu perfil de candidatura com o assistente. A configuração não termina neste formulário.
+Escolha o **quadro local** ou uma **database do Notion** como fonte do estado das vagas. O quadro local é o padrão. Para Notion, informe somente o ID da database no formulário e configure a conexão Notion na ferramenta do assistente. Não envie credenciais no chat.
+
+Em candidaturas, o padrão é **só mapear e avaliar**. Se escolher configurar candidatura assistida no Chrome, o assistente ainda precisará revisar seu perfil, suas respostas e as autorizações necessárias. Essa escolha não libera preenchimento ou envio. O campo `autorizado` do perfil de candidatura permanece `false` depois do formulário.
+
+A rodada recorrente começa **desligada**. Se você a escolher, o resumo pedirá ao assistente que crie uma tarefa no agendador nativo a cada 4 horas. A Apify deve executar no máximo uma vez por dia, mesmo que haja mais rodadas. O formulário grava a política local em `vagas/data/politica-autonomia.json`, mas não cria a tarefa. Ela depende de o computador e as conexões estarem disponíveis.
 
 ## 7. Inclua o LinkedIn, se quiser
 
@@ -59,6 +63,8 @@ O assistente vai:
 - Ler seu material e esclarecer informações que faltarem.
 - Preparar o currículo no idioma escolhido para você conferir.
 - Ajustar a busca à sua profissão e verificar se a configuração está completa.
+- Configurar a fonte de estado e o modo de candidatura escolhidos, sem inferir consentimento.
+- Se você ativou a autonomia, criar e confirmar no chat a tarefa recorrente de 4 horas no agendador nativo do assistente.
 
 Ao terminar o formulário, tudo está salvo neste computador. A configuração fica concluída depois que o assistente prepara o currículo e ajusta a busca. Aguarde essa confirmação antes de iniciar a primeira busca.
 

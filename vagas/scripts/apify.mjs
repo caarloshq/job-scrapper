@@ -14,6 +14,7 @@ import * as cache from '../src/cache.js';
 import { juntar, reconciliarCache } from '../src/dedupe.js';
 import { avaliar } from '../src/filtro.js';
 import * as semantico from '../src/semantico.js';
+import { entrarEscritor } from '../src/entrada-operacao.js';
 // O .env e carregado pelo config.js, que todo mundo importa.
 import { linkedin } from '../src/config.js';
 
@@ -30,6 +31,7 @@ if (modo === 'desligado') {
   process.exit(1);
 }
 
+entrarEscritor('apify');
 const alvo = modo === 'task' ? `Task ${task}` : `Actor ${linkedin.actor} com a busca de config/linkedin.json`;
 console.log(usarUltimo
   ? `\nReimportando o ultimo dataset (${alvo}, sem gastar credito)...\n`
@@ -59,7 +61,7 @@ console.log(`  passam no filtro ...... ${aprovadas.length}`);
 // para a ATS de origem e ganha dos agregadores.
 const c = cache.carregar();
 const atuais = Object.values(c.vagas);
-const { vagas: unidas, colisoes } = juntar([...atuais, ...aprovadas]);
+const { vagas: unidas, colisoes } = juntar([...atuais, ...aprovadas], { identidadeEstrita: true });
 
 let novas = 0;
 for (const v of unidas) {
@@ -70,7 +72,7 @@ for (const v of unidas) {
 // Reconcilia o cache inteiro: pega vaga que ficou solta numa chamada
 // anterior (ex.: esta rodando antes de `npm run rodada` ter trazido a
 // duplicata de fonte mais forte) e so agora encontra a par dela.
-const { vagas: reconciliadas, removidos } = reconciliarCache(c.vagas);
+const { vagas: reconciliadas, removidos } = reconciliarCache(c.vagas, { identidadeEstrita: true });
 const julgamentosAtuais = semantico.carregar();
 for (const v of Object.values(reconciliadas)) semantico.aplicar(v, julgamentosAtuais);
 const migradas = semantico.migrarChaves(Object.values(reconciliadas));

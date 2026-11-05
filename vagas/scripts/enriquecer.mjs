@@ -22,6 +22,7 @@ import { calcular, compatibilidade } from '../src/score.js';
 import { janela, ROTULO } from '../src/frescor.js';
 import { resolver as resolverSalario, formatar as formatarSalario } from '../src/salario.js';
 import { dormir } from '../src/util.js';
+import { entrarEscritor } from '../src/entrada-operacao.js';
 
 const args = process.argv.slice(2);
 const iArq = args.indexOf('--arquivo');
@@ -46,6 +47,7 @@ if (!urls.length) {
   process.exit(1);
 }
 
+entrarEscritor('enriquecer');
 const c = cache.carregar();
 const jaTinha = new Set(Object.keys(c.vagas));
 

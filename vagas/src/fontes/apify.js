@@ -21,6 +21,7 @@
 //   - `seniorityLevel` traz "Entry level", que e junior e tem que sair.
 import { limparHtml } from '../util.js';
 import { paraNumero } from '../salario.js';
+import { reservarDisparo, confirmarDisparo } from '../cota-apify.js';
 
 export const NOME = 'LinkedIn (Apify)';
 const BASE = 'https://api.apify.com/v2';
@@ -211,6 +212,16 @@ async function api(caminho, token, opcoes = {}) {
   return r.json();
 }
 
+async function disparoPago(caminho, token, opcoes) {
+  const reserva = reservarDisparo(); // intenção durável antes de qualquer POST pago
+  let run;
+  try { run = (await api(caminho, token, opcoes)).data; }
+  catch { throw new Error('APIFY_DISPARO_INCERTO: cota diária reservada; consulte o run por GET ou reimporte com --ultimo antes de agir.'); }
+  try { confirmarDisparo({ ...reserva, runId: run.id }); }
+  catch { throw new Error('APIFY_DISPARO_INCERTO: POST respondeu, mas o run não foi salvo; consulte o run por GET ou reimporte com --ultimo.'); }
+  return run;
+}
+
 /**
  * config/linkedin.json → URL de busca do LinkedIn.
  *
@@ -247,18 +258,16 @@ export function montarInput(cfg = {}) {
 
 /** Dispara o Actor com input e devolve o run, sem esperar. */
 export async function dispararActor(actor, input, token, { memoriaMb = 512, timeoutS = 480 } = {}) {
-  const j = await api(`/acts/${actor}/runs?memory=${memoriaMb}&timeout=${timeoutS}`, token, {
+  return disparoPago(`/acts/${actor}/runs?memory=${memoriaMb}&timeout=${timeoutS}`, token, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(input),
   });
-  return j.data;
 }
 
 /** Dispara a Task e devolve o run, sem esperar. */
 export async function dispararTask(task, token) {
-  const j = await api(`/actor-tasks/${task}/runs`, token, { method: 'POST' });
-  return j.data;
+  return disparoPago(`/actor-tasks/${task}/runs`, token, { method: 'POST' });
 }
 
 /**

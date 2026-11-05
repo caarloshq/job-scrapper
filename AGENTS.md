@@ -41,3 +41,9 @@ A sua parte é **entrevista**, não formulário: o formulário já pegou os fato
 ## O que nunca vai pro git
 
 `vagas/.env`, `vagas/data/dados-pessoais.json`, os materiais em `materiais-fonte/`, os currículos gerados em `Curriculo/` e os rascunhos em `builds/`. Já estão no `.gitignore`. Se for publicar um fork, rode `npm run checar:publico` antes: ele acusa dado pessoal em arquivo versionável.
+
+## Opções da instalação e operação recorrente
+
+O onboarding escolhe quadro local ou Notion, só mapeamento ou Chrome assistido e tarefa opcional de quatro em quatro horas. Configuração da instalação e conexões pertencem à própria pessoa; nenhum token deve ser colado no chat. O agente usa `vagas/RODADA-DIARIA.md` como única fonte da execução e cria/atualiza a tarefa no agendador nativo somente quando a pessoa escolher autonomia. Se não houver agendador, entrega o prompt no chat e informa que não criou a tarefa. O processo Node não instala um serviço de agentes nem executa o agendador.
+
+O registro obrigatório do preenchimento é `revisoes/respostas.md`, escrito pelo maestro/aplicador através de `npm run registrar:respostas` dentro de vagas. Não exigir banco novo por resposta. Nas entradas npm de coleta, atualização estável ocorre antes da importação do código quando as condições seguras permitem; recusa mantém dados e informa o motivo. Notion opcional usa snapshot completo e a conexão do agente; não usa credenciais do mantenedor.

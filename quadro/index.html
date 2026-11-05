@@ -141,7 +141,12 @@
       if (!r.ok) throw new Error(j.erro || 'falhou');
       dados = j; render();
       aviso('ok', `Movida para ${status}. Fica no histórico.`);
-    } catch (e) { aviso('erro', `Não moveu: ${e.message}`); }
+    } catch (e) {
+      render(); // Restaura o status confirmado, inclusive no seletor da lista.
+      aviso('erro', e.message.includes('POSSE_NEGADA')
+        ? 'Não moveu: a rodada está em andamento. Aguarde encerrar e tente de novo.'
+        : `Não moveu: ${e.message}`);
+    }
   }
 
   const visiveis = () => dados.vagas.filter((v) => !filtro || `${v.titulo} ${v.empresa}`.toLowerCase().includes(filtro));

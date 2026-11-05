@@ -7,10 +7,10 @@
 // O defeito que criou este arquivo: em 2026-07-30 rodei `rm -f data/vagas.json`
 // cinco vezes ao corrigir filtros, e cada vez o sistema esquecia todo o
 // julgamento. As 19 notas so sobreviveram porque estavam no Notion.
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { DIR_DADOS, perfil } from './config.js';
+import { lerEstado, salvarEstado } from './estado-central.js';
 
 /**
  * Impressao da descricao no momento da leitura. Se o anuncio for reeditado,
@@ -26,12 +26,7 @@ export function impressao(descricao) {
 const ARQ = join(DIR_DADOS, 'semantico.json');
 
 export function carregar() {
-  if (!existsSync(ARQ)) return { versao: 1, julgamentos: {} };
-  try {
-    return JSON.parse(readFileSync(ARQ, 'utf8'));
-  } catch {
-    return { versao: 1, julgamentos: {} };
-  }
+  return lerEstado(ARQ, { versao: 1, julgamentos: {} });
 }
 
 /**
@@ -48,9 +43,7 @@ function ordenarJulgamentos(dados) {
 }
 
 export function salvar(dados) {
-  mkdirSync(DIR_DADOS, { recursive: true });
-  writeFileSync(ARQ, JSON.stringify(ordenarJulgamentos(dados), null, 2));
-  return ARQ;
+  return salvarEstado(ARQ, dados, DIR_DADOS, ordenarJulgamentos);
 }
 
 /**
