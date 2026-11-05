@@ -164,9 +164,9 @@ export function prioridade(fonte) {
  *   `removidos` sao os ids que deixaram de existir como chave propria porque
  *   uma outra entrada do cache ja e a mesma vaga.
  */
-export function reconciliarCache(vagasCache) {
+export function reconciliarCache(vagasCache, opcoes) {
   const antes = new Set(Object.keys(vagasCache));
-  const { vagas } = juntar(Object.values(vagasCache));
+  const { vagas } = juntar(Object.values(vagasCache), opcoes);
   const novoCache = Object.fromEntries(vagas.map((v) => [v.idExterno, v]));
   const removidos = [...antes].filter((id) => !(id in novoCache));
   return { vagas: novoCache, removidos };
@@ -183,7 +183,7 @@ function candidatoPorAnuncio(mapa, chave, v) {
   return requisicoesConflitam(v, outro) ? null : outro;
 }
 
-export function juntar(lista) {
+export function juntar(lista, { identidadeEstrita = false } = {}) {
   const porId = new Map();
   const porLink = new Map();
   const porCanonico = new Map();
@@ -196,11 +196,18 @@ export function juntar(lista) {
     const canonico = idCanonico(v);
     const anuncio = chaveAnuncio(v);
     const requisicao = chaveRequisicao(v);
-    const existente = porId.get(v.idExterno)
+    const forte = porId.get(v.idExterno)
       || porCanonico.get(canonico)
       || (link ? porLink.get(link) : null)
-      || (requisicao ? porRequisicao.get(requisicao) : null)
-      || (anuncio ? candidatoPorAnuncio(porAnuncio, anuncio, v) : null);
+      || (requisicao ? porRequisicao.get(requisicao) : null);
+    const fraco = anuncio ? candidatoPorAnuncio(porAnuncio, anuncio, v) : null;
+    if (identidadeEstrita && !forte && fraco) {
+      for (const [candidato, outro] of [[v, fraco], [fraco, v]]) {
+        candidato.conflitoIdentidade = true;
+        candidato.possiveisDuplicatas = [...new Set([...(candidato.possiveisDuplicatas || []), outro.idExterno])];
+      }
+    }
+    const existente = forte || (!identidadeEstrita ? fraco : null);
 
     if (!existente) {
       v.tambemVistoEm = [];

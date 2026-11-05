@@ -1,24 +1,19 @@
-// Debito/credito de candidaturas diarias. Nao mexe no Notion: so compara o
-// conjunto atual de "Ja apliquei" (que quem chama busca via MCP) contra o
-// que ja foi contado da ultima vez, e atualiza o saldo.
+// Debito/credito de candidaturas diarias. Compara IDs confirmados que o
+// chamador leu no quadro com os que ja foram contados da ultima vez.
 //
 // Positivo = credito (aplicou alem da quota). Negativo = debito (ficou devendo).
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { join } from 'node:path';
+import { DIR_DADOS } from './config.js';
+import { lerEstado, salvarEstado } from './estado-central.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const ARQUIVO = path.join(__dirname, '..', 'data', 'candidaturas.json');
+const ARQUIVO = join(DIR_DADOS, 'candidaturas.json');
 
 export function carregar() {
-  if (!fs.existsSync(ARQUIVO)) {
-    return { quotaDiaria: 10, ultimaChecagem: null, saldo: 0, idsJaContados: [] };
-  }
-  return JSON.parse(fs.readFileSync(ARQUIVO, 'utf8'));
+  return lerEstado(ARQUIVO, { quotaDiaria: 10, ultimaChecagem: null, saldo: 0, idsJaContados: [] });
 }
 
 export function salvar(dados) {
-  fs.writeFileSync(ARQUIVO, JSON.stringify(dados, null, 2));
+  return salvarEstado(ARQUIVO, dados, DIR_DADOS);
 }
 
 function diasCorridos(de, ate) {
@@ -28,7 +23,7 @@ function diasCorridos(de, ate) {
 }
 
 /**
- * @param {string[]} idsAtuais - todo ID externo com Status = "Ja apliquei" agora no Notion
+ * @param {string[]} idsAtuais - todo ID externo confirmado no quadro
  * @param {Date} hoje
  * @returns {{ saldo: number, novasHoje: string[], quotaDevida: number, dados: object }}
  */

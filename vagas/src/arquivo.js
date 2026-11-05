@@ -1,7 +1,6 @@
-// O leitor do estado das vagas. Desde 2026-09-14 o estado e o QUADRO local
-// (data/quadro.json, escrito por src/quadro.js e movido no navegador por
-// scripts/quadro.mjs). Quem usa Notion pode continuar espelhando a database
-// aqui com `espelhar()`: o formato e o mesmo, so muda quem escreve.
+// O leitor do estado das vagas. O padrão é o quadro local (data/quadro.json).
+// A instalação pode escolher Notion; nesse modo o leitor usa data/notion.json,
+// importado pelo agente, sem misturar status ou escrita com o quadro local.
 //
 // O nome `noNotion` ficou por compatibilidade: significa "ja esta no quadro".
 //
@@ -9,9 +8,10 @@
 // alimentar rodando um comando a cada vaga que aplicasse. Era um segundo banco
 // guardando o que o Notion ja guardava — complicacao inventada por mim, e ele
 // cortou. O estado mora num lugar so.
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { DIR_DADOS } from './config.js';
+import { lerEstado, salvarEstado } from './estado-central.js';
+import { carregarFonte, exigirLocal } from './fonte-estado.js';
 import { normalizarLink } from './util.js';
 import { chaveAnuncio, chaveRequisicao, idCanonico, requisicoesConflitam } from './dedupe.js';
 
@@ -36,22 +36,21 @@ export const CONCLUIDOS = ['Já apliquei', 'Entrevista', 'Cancelada', 'Aplicado 
 // `Avaliar`, `Aplicar` e `Revisar` sao ativos: continuam no radar.
 
 export function carregar() {
-  if (!existsSync(ARQ)) return { versao: 1, sincronizadoEm: null, vagas: {} };
-  try {
-    return JSON.parse(readFileSync(ARQ, 'utf8'));
-  } catch {
-    return { versao: 1, sincronizadoEm: null, vagas: {} };
-  }
+  return carregarFonte();
 }
 
 /**
- * Regrava o espelho inteiro com o que veio do Notion.
+ * Compatibilidade legada local: regrava linhas no quadro local. No modo Notion
+ * a importação completa passa por fonte-estado.js e nunca escreve aqui.
  * @param {Array<{idExterno:string, status:string, empresa?:string, titulo?:string, url?:string}>} linhas
  */
 export function espelhar(linhas) {
+  exigirLocal();
   // Preserva historico e retrato de quem ja esta no quadro: espelhar nunca apaga.
   const antes = carregar();
-  const d = { versao: 2, sincronizadoEm: new Date().toISOString(), vagas: { ...antes.vagas } };
+  const d = antes;
+  d.versao = 2;
+  d.sincronizadoEm = new Date().toISOString();
   for (const l of linhas) {
     if (!l?.idExterno) continue;
     d.vagas[l.idExterno] = {
@@ -62,8 +61,7 @@ export function espelhar(linhas) {
       url: l.url || antes.vagas[l.idExterno]?.url || null,
     };
   }
-  mkdirSync(DIR_DADOS, { recursive: true });
-  writeFileSync(ARQ, JSON.stringify(d, null, 2));
+  salvarEstado(ARQ, d, DIR_DADOS);
   return d;
 }
 
@@ -91,7 +89,7 @@ export function espelhar(linhas) {
  * ressalva: nao vale para agregador cujo campo empresa e o intermediario
  * (Jobgether etc.), porque ai duas vagas reais dividem o rotulo.
  */
-export function aplicar(vaga, dados = carregar()) {
+export function aplicar(vaga, dados = carregar(), { identidadeEstrita = false } = {}) {
   // `idCanonico` calculado na hora, nao so o campo gravado: entrada que veio do
   // cache antigo nao tem o campo, e sem ele a vaga da Gupy espelhada na Remotar
   // (mesmo jobId dentro do link base64) reaparecia como novidade.
@@ -126,7 +124,11 @@ export function aplicar(vaga, dados = carregar()) {
     const n = indicePorAnuncio(dados).get(anuncio);
     // Numero de requisicao diferente dos dois lados = vaga diferente, mesmo com
     // titulo igual. A Nortal tem a 1520 e a 1552 com o mesmo cargo.
-    if (n && !requisicoesConflitam(vaga, n)) return marcar(vaga, n);
+    if (n && !requisicoesConflitam(vaga, n)) {
+      if (!identidadeEstrita) return marcar(vaga, n);
+      vaga.conflitoIdentidade = true;
+      vaga.possivelDuplicataQuadro = n.status;
+    }
   }
 
   vaga.noNotion = false;

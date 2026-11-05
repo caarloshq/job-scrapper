@@ -8,8 +8,20 @@ Antes de começar, ler [`AGENTS.md`](AGENTS.md) e [`RESPOSTAS.md`](RESPOSTAS.md)
 
 O ciclo é o que você descreveu: *a primeira rodada pega as vagas e põe no quadro; na próxima, ele vê as que já foram concluídas e esquece elas.*
 
-> A rodada coleta, prepara materiais e conduz candidaturas autorizadas. A meta está em `data/candidaturas.json`; ela orienta volume, nunca autoriza usar resposta pendente nem reduzir os critérios de qualidade. A cadência registrada é dia sim, dia não; conferir a configuração efetiva do agendador ao operá-lo.
+> A rodada coleta, prepara materiais e conduz candidaturas autorizadas. A meta está em `data/candidaturas.json`; ela orienta volume, nunca autoriza usar resposta pendente nem reduzir os critérios de qualidade. A cadência opcional é de quatro em quatro horas; conferir a configuração efetiva do agendador ao operá-lo.
 
+
+## Autonomia configurável e divisão do trabalho
+
+A instalação pode usar rodada manual ou uma tarefa nativa do assistente a cada quatro horas. A tarefa apenas chama este runbook; a cadência depende do computador e das conexões disponíveis. Antes de começar, consultar a política local em `data/politica-autonomia.json`, quando existir, o perfil de candidatura e a operação atual. Se houver outro dono ativo ou desconhecido, não tomar abas nem repetir coleta: registrar bloqueio e aguardar retomada explícita.
+
+Modo `mapear`: buscar, ler, pontuar e atualizar a fonte de estado, sem preencher nem enviar candidatura. Modo `chrome`: usar a conexão autorizada do Chrome quando disponível e seguir os limites do perfil e as autorizações por candidatura; seleção desse modo não resolve perguntas pessoais nem autoriza consentimentos opcionais. Sem conexão ou aprovação necessária, manter pendente e continuar trabalho independente. O agendamento não contorna uma confirmação exigida pelo runtime.
+
+O principal atua como maestro/aplicador. Despacha busca e preparação para auxiliares disponíveis; revisão independente ocupa capacidade quando houver entrega. Cada execução retoma do estado salvo. Isso é equipe de papéis fixos por rodada, sem um serviço de modelos 24h ou API adicional. O estoque pronto e os bloqueios governam a fila. A conexão de Chrome permanece com o principal. O núcleo local não prova exclusividade entre sessões de navegador nem libera clique por si.
+
+**Apify paga no máximo uma vez por dia da instalação.** Antes do POST, `src/cota-apify.js` grava intenção em `data/cota-apify.json`; Task e Actor compartilham a cota. Uma resposta incerta mantém o dia consumido. Usar `--ultimo`/GET para reaproveitar dados. Se a Apify estiver configurada e a cota ainda estiver livre, executar uma coleta paga naquela primeira rodada do dia; se houver uso ou intenção, reutilizar com `--ultimo`. Nas demais rodadas do dia, buscar outras fontes e avançar na fila sem disparar Apify paga novamente. `VAGAS_FUSO` seleciona o fuso; por padrão vale o fuso do computador. Não apagar o registro para repetir cobrança. Uma coleta anterior à instalação da cota precisa ser registrada por referência verificável antes da primeira rodada.
+
+**Depois de conferir os campos preenchidos**, o maestro usa `npm run registrar:respostas` para acrescentar as perguntas e os textos exatos em `../revisoes/respostas.md`. Esse passo não exige novo banco. Preservar os registros estruturados já usados pela candidatura; falta de salvamento bloqueia transmissão, sem apagar rascunho ou repetir envio.
 
 ---
 
@@ -17,7 +29,7 @@ O ciclo é o que você descreveu: *a primeira rodada pega as vagas e põe no qua
 
 Desde 2026-09-14 o estado das vagas mora em `data/quadro.json`, o quadro local (`npm run quadro` abre no navegador). A rodada lê esse arquivo sozinha: não existe passo de espelhar. Vaga com status `Já apliquei`, `Entrevista` ou `Cancelada` está **concluída**: sai do radar e da fila de leitura, e continua no quadro com o histórico. `Avaliar` e `Aplicar` seguem ativas.
 
-Quem usa Notion pode espelhar a database no mesmo arquivo com `espelhar()` de `src/arquivo.js`, no começo da rodada; o formato é o mesmo, e o histórico é preservado.
+Quem escolhe Notion usa `npm run estado -- --fonte notion --database-id <id>` e consulta a database completa via conexão autorizada do agente. O snapshot normalizado é importado por `npm run estado -- --importar <arquivo.json>` para `data/notion.json`. Não chamar `arquivo.espelhar()` em modo Notion. O quadro local fica preservado e não é uma fonte alternativa de status. Antes de preencher ou enviar, reconsultar o Notion; o verificador recusa snapshot com mais de cinco minutos, futuro ou sem Gaps.
 
 **Nunca edite o `quadro.json` à mão nem apague uma vaga dele.** Pra mover por código, `quadro.mover(id, status, { por: 'agente' })`: fica no histórico.
 
@@ -29,15 +41,15 @@ npm run rodada
 
 Roda camadas 1, 3 e 4. Expurga do cache o que não passa mais no filtro atual — apertar uma regra em `config/` tem efeito aqui, sem precisar refetch.
 
-Se já rodou hoje e for preciso repetir, `npm run rodada -- --forcar`.
+Na agenda de quatro em quatro horas, usar `npm run rodada -- --forcar` para atualizar as outras fontes no mesmo dia. `--forcar` só libera a repetição da rodada local; a cota paga do Apify continua limitada a uma tentativa diária.
 
 ## 2.5. Camada 4 — LinkedIn
 
-Decisão de 2026-08-10: a rodada dispara Task **nova** no Apify a cada execução — dataset sempre fresco, nunca reimporta o de ontem. Custa crédito e pode somar até 8 minutos à rodada (teto de espera do run).
+A primeira rodada do dia com Apify configurada pode disparar o Actor ou a Task paga, após gravar a intenção em `data/cota-apify.json`. As rodadas seguintes consultam a cota e reutilizam o último run por GET, sem novo POST. Se o POST teve resposta incerta, manter a cota consumida e conferir o run existente; não repetir o disparo.
 
-Sem `APIFY_TOKEN` em `vagas/.env`, a camada 4 não entra e as outras seguem normalmente. Com o token, a rodada dispara o Actor de `config/linkedin.json` com a busca de lá; com `APIFY_TASK` também no `.env`, a Task manda e o arquivo é ignorado.
+Sem `APIFY_TOKEN` em `vagas/.env`, a camada 4 não entra e as outras seguem normalmente. Com o token, a primeira tentativa paga usa o Actor de `config/linkedin.json` com a busca de lá; com `APIFY_TASK` também no `.env`, a Task manda e o arquivo é ignorado. As consultas seguintes do dia usam o último run por GET.
 
-Para reimportar o último dataset sem gastar crédito (fora da rodada agendada, ex.: debug):
+Para reimportar o último dataset sem gastar crédito também fora da rodada:
 
 ```bash
 npm run apify -- --ultimo
@@ -404,3 +416,7 @@ Espelhar antes de coletar, porque coletar sem saber o que está concluído reofe
   status previsto acima; intenção de aplicar não equivale a envio.
 - **Não inventa nada no currículo.** A skill parte do `base_content` verificado e só reordena e realça. Vaga pede skill que você não tem: a skill não entra, vira linha em `Gaps`.
 - **Não edita `data/quadro.json` à mão.**
+
+## Registrar respostas antes de retomar
+
+O maestro/aplicador salva todas as respostas abertas integralmente, valores preenchidos e perguntas pendentes conforme [RESPOSTAS.md](RESPOSTAS.md), inclusive em candidaturas em rascunho. Mantém `../revisoes/respostas.md` como visualização para revisão; o banco e o histórico por vaga são as fontes dos registros. O revisor aponta lacunas antes da liberação; falha de registro bloqueia somente a candidatura afetada. A comparação com o formulário é responsabilidade do agente e não é automatizada pelo validador.

@@ -35,7 +35,7 @@ export function hidratar(vagas) {
     if (!avaliar(v).passa) { barradas++; continue; }
     v.score = calcular(v);
     semantico.aplicar(v, julgamentos);
-    arquivo.aplicar(v, notion);
+    arquivo.aplicar(v, notion, { identidadeEstrita: true });
     v.compatibilidade = compatibilidade(v, v.semantico);
     ativas.push(v);
   }

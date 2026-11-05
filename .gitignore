@@ -16,3 +16,6 @@ __pycache__/
 !/Skills/adapt-resume/builds/.gitkeep
 /Skills/adapt-resume/base_resume_*.pdf
 .claude/
+
+# Visualização pessoal das respostas de candidaturas; não publicar.
+/revisoes/

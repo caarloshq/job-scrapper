@@ -58,6 +58,7 @@
   input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
   input.invalido { border-color: var(--error); }
   .campos { display: grid; gap: 16px; }
+  #notion-grupo[hidden] { display: none; }
   .campos.duas { grid-template-columns: 1fr 1fr; }
   @media (max-width: 520px) { .campos.duas { grid-template-columns: 1fr; } }
 
@@ -268,15 +269,34 @@
 
   <!-- 6 -->
   <section class="tela" data-passo="6">
-    <h2>Quer configurar o preenchimento de candidaturas?</h2>
-    <p class="lead">O assistente pode ajudar a preencher formulários com respostas revisadas por você. Você pode configurar essa opção agora ou depois.</p>
+    <h2>Como quer acompanhar as vagas?</h2>
+    <p class="lead">Escolha onde acompanhar o estado das vagas, como tratar candidaturas e se quer pedir uma rodada recorrente ao assistente.</p>
+    <div class="grupo">
+      <label class="rotulo">Onde acompanhar as vagas</label>
+      <div class="opcoes" role="radiogroup" aria-label="Fonte de estado">
+        <label class="opcao"><input type="radio" name="fonte-estado" value="local" checked><span class="t">Quadro local</span><span class="d">Funciona neste computador, sem conexão extra.</span></label>
+        <label class="opcao"><input type="radio" name="fonte-estado" value="notion"><span class="t">Minha database no Notion</span><span class="d">O assistente consulta sua conexão Notion. A configuração da conta acontece na sua ferramenta.</span></label>
+      </div>
+      <div id="notion-grupo" class="campos" hidden style="margin-top:16px">
+        <label class="rotulo" for="database-id">ID da database do Notion</label>
+        <input type="text" id="database-id" autocomplete="off" placeholder="32 caracteres do link da database">
+        <span class="ajuda">Cole só o ID da database. Não cole token ou credencial aqui nem na conversa.</span>
+      </div>
+    </div>
+    <div class="grupo">
+      <label class="rotulo">O que fazer com candidaturas</label>
+      <div class="opcoes" role="radiogroup" aria-label="Modo de candidatura">
+        <label class="opcao"><input type="radio" name="modo-candidatura" value="mapear" checked><span class="t">Só mapear e avaliar</span><span class="d">O assistente não preenche nem envia candidaturas.</span></label>
+        <label class="opcao"><input type="radio" name="modo-candidatura" value="chrome_assistido"><span class="t">Configurar candidatura assistida no Chrome</span><span class="d">Depois do onboarding, você revisa perfil, respostas e autorizações com o assistente. Esta escolha sozinha não autoriza preenchimento ou envio.</span></label>
+      </div>
+    </div>
     <div class="grupo">
       <label class="toggle">
-        <input type="checkbox" id="autorizado">
-        <span><span class="t">Quero configurar com o assistente</span><br><span class="d">Ainda será necessário completar e revisar seu perfil de candidatura com o assistente. Marcar esta opção não conclui a configuração.</span></span>
+        <input type="checkbox" id="autonomia">
+        <span><span class="t">Pedir rodada recorrente a cada 4 horas</span><br><span class="d">O assistente criará a tarefa no agendador dele depois de concluir o onboarding. A Apify poderá rodar no máximo uma vez por dia. A tarefa depende do computador e das conexões disponíveis.</span></span>
       </label>
     </div>
-    <div class="aviso info">Você pode continuar buscando vagas e preparando currículos com essa opção desligada.</div>
+    <div class="aviso info">Sem tarefa recorrente, você pode iniciar a rodada manualmente quando quiser.</div>
   </section>
 
   <!-- 7 -->
@@ -331,7 +351,7 @@
 
 <script>
 (() => {
-  const PASSOS = ['Quem é você', 'Mercado', 'Currículo e LinkedIn', 'Profissão', 'Salário', 'Candidatura automática', 'LinkedIn (opcional)', 'Resumo'];
+  const PASSOS = ['Quem é você', 'Mercado', 'Currículo e LinkedIn', 'Profissão', 'Salário', 'Quadro e autonomia', 'LinkedIn (opcional)', 'Resumo'];
   const PAISES = [
     ['Brasil', 'Brazil', '106057199'], ['Portugal', 'Portugal', '100364837'], ['Estados Unidos', 'United States', '103644278'],
     ['Reino Unido', 'United Kingdom', '101165590'], ['Canadá', 'Canada', '101174742'], ['Alemanha', 'Germany', '101282230'],
@@ -408,7 +428,15 @@
     $$('input[name=modelo]').forEach((c) => { c.checked = c.value === 'remoto' ? p.exigir_remoto !== false || p.aceita_hibrido || p.aceita_presencial ? true : true : c.value === 'hibrido' ? p.aceita_hibrido === true : p.aceita_presencial === true; });
     $('#cidade').value = p.cidade || '';
     atualizarCidade();
-    $('#autorizado').checked = Boolean(estado.candidatura?.autorizado);
+    const fonte = estado.fonteEstado?.fonte || 'local';
+    const fonteRadio = document.querySelector(`input[name="fonte-estado"][value="${fonte}"]`);
+    if (fonteRadio) fonteRadio.checked = true;
+    $('#database-id').value = estado.fonteEstado?.databaseId || '';
+    atualizarFonteEstado();
+    const modo = estado.politica?.modoCandidatura || 'mapear';
+    const modoRadio = document.querySelector(`input[name="modo-candidatura"][value="${modo}"]`);
+    if (modoRadio) modoRadio.checked = true;
+    $('#autonomia').checked = estado.politica?.ativa === true;
     if (estado.env?.token) { $('#token-estado').hidden = false; $('#token').placeholder = 'Já salvo. Cole outro só se quiser trocar.'; }
     renderArquivos();
   }
@@ -423,6 +451,8 @@
     $('#cidade-grupo').hidden = !precisa;
   }
   $$('input[name=modelo]').forEach((c) => c.addEventListener('change', atualizarCidade));
+  function atualizarFonteEstado() { $('#notion-grupo').hidden = valor('fonte-estado') !== 'notion'; }
+  $$('input[name="fonte-estado"]').forEach((c) => c.addEventListener('change', atualizarFonteEstado));
 
   // ---------- arquivos: um PDF por tipo ----------
   const pendentes = { curriculo: null, linkedin: null };
@@ -518,7 +548,13 @@
       if (precisaCidade && !marcar($('#cidade'), !$('#cidade').value.trim(), 'Híbrido e presencial precisam da sua cidade.')) return null;
       return { minimo_mensal_brl: piso, referencia_atual_brl: ref, aceita_hibrido: modelos.includes('hibrido'), aceita_presencial: modelos.includes('presencial'), aceita_remoto: modelos.includes('remoto'), cidade: precisaCidade ? $('#cidade').value.trim() : '' };
     }
-    if (atual === 6) return { autorizado: $('#autorizado').checked };
+    if (atual === 6) {
+      const fonteEstado = valor('fonte-estado');
+      const databaseId = $('#database-id').value.trim();
+      const idValido = /^[0-9a-f]{32}$/i.test(databaseId) || /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(databaseId);
+      if (fonteEstado === 'notion' && !marcar($('#database-id'), !idValido, 'Cole o ID da database, sem token.')) return null;
+      return { fonteEstado, databaseId, modoCandidatura: valor('modo-candidatura'), autonomia: $('#autonomia').checked };
+    }
     if (atual === 7) return { token: $('#token').value.trim() || null };
     return {};
   }
@@ -567,17 +603,15 @@
       ['Área', p.profissao || ''],
       ['Piso', p.salario?.minimo_mensal_brl ? `R$ ${p.salario.minimo_mensal_brl} por mês` : ''],
       ['Modelo', [p.aceita_remoto !== false ? 'remoto' : null, p.aceita_hibrido ? 'híbrido' : null, p.aceita_presencial ? 'presencial' : null].filter(Boolean).join(', ') + (p.cidade ? ` em ${p.cidade}` : '')],
-      ['Candidatura automática', estado.candidatura?.autorizado ? 'solicitada; falta concluir o perfil com o assistente' : 'desligada'],
+      ['Quadro', estado.fonteEstado?.fonte === 'notion' ? `Notion · database ${estado.fonteEstado.databaseId}` : 'local'],
+      ['Candidaturas', estado.politica?.modoCandidatura === 'chrome_assistido' ? 'configurar Chrome com o assistente; envio ainda não autorizado' : 'só mapear e avaliar'],
+      ['Rodada recorrente', estado.politica?.ativa ? 'solicitar tarefa a cada 4 horas; Apify no máximo 1 vez por dia' : 'desligada'],
       ['Apify', estado.env?.token ? (estado.env.task ? 'token e Task salvos' : 'conexão salva') : 'sem token: LinkedIn fica de fora'],
       ['Próximas tarefas', 'montar o currículo base · reescrever os termos de busca · marcar o perfil como configurado'],
     ];
     $('#resumo').innerHTML = linhas.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join('');
 
-    const instrucao = [
-      'Quero fazer o onboarding. Já preenchi o formulário: rode `cd vagas && npm run onboarding` e não repergunte o que está ok.',
-      `Sou ${p.nome || 'a pessoa dona deste projeto'}, buscando vaga de ${p.cargo_alvo || '(cargo)'}. Área: ${p.profissao || '(não definida)'}.`,
-      'Falta você: montar meu currículo base a partir de Skills/adapt-resume/materiais-fonte/ (me entreviste antes, sem inventar nada) e reescrever vagas/config/palavras-chave.json pra minha área. Depois `npm run onboarding -- --concluir`.',
-    ].join('\n');
+    const instrucao = estado.instrucao || 'Recarregue a página para receber a instrução completa.';
     $('#instrucao').value = instrucao;
     const resumoMd = ['# Onboarding do Caça-vagas', '', `Salvo em ${new Date().toLocaleDateString('pt-BR')}.`, '', ...linhas.map(([k, v]) => `- **${k}:** ${v || '(vazio)'}`), '', '## Instrução para o assistente', '', '```', instrucao, '```', ''].join('\n');
     $('#baixar').href = URL.createObjectURL(new Blob([resumoMd], { type: 'text/markdown;charset=utf-8' }));

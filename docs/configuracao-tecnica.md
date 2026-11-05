@@ -204,6 +204,8 @@ O que muda no sistema quando você move um card: `Já apliquei`, `Entrevista` e 
 
 No Claude Code desktop, peça ao agente uma tarefa agendada que execute o `vagas/RODADA-DIARIA.md`. Rode uma vez na mão antes: a aprovação de ferramenta só grava a partir da primeira execução. No Codex, rode `npm run rodada` quando quiser.
 
+O módulo de [coordenação local](operacao-local.md) oferece posse e registro de intenções para uma futura rodada com mais de um agente. Ele ainda não controla todas as entradas da rodada nem libera candidatura pelo navegador.
+
 ---
 
 ## Duas regras que não se negociam

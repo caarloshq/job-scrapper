@@ -9,6 +9,10 @@ import { fileURLToPath } from 'node:url';
 import { createHash, randomUUID } from 'node:crypto';
 
 export const ARQUIVOS_COMPARTILHADOS = Object.freeze([
+  'src/registro-md.js', 'scripts/registrar-respostas.mjs', 'test/registro-md.test.js',
+  'src/cota-apify.js', 'test/cota-apify.test.js',
+  'src/operacao.js', 'src/persistencia.js', 'src/estado-central.js',
+  'scripts/operacao.mjs', 'test/operacao.test.js',
   'src/fontes-registro.js', 'src/fontes/ats.js', 'src/fontes/gringas.js',
   'src/fontes/uxjobs.js', 'src/fontes/portais.js', 'src/fontes/importadas.js', 'src/versao-git.js',
   'config/catalogo-fontes.json', 'config/fontes-portais.json',
