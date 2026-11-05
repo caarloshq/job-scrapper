@@ -6,7 +6,7 @@ Tenha seu currículo em PDF e acesso a um desses assistentes. A conexão com o L
 
 ## Abra o formulário
 
-Se ainda não instalou o projeto, siga o [README](README.md#comece-aqui). Para retomar a configuração, abra o terminal na pasta `vagas` e execute:
+Se ainda não instalou o projeto, siga o [README](README.md#para-instalar-pelo-terminal). Para retomar a configuração, abra o terminal na pasta `vagas` e execute:
 
 ```bash
 npm start

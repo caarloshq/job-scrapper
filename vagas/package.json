@@ -1,6 +1,6 @@
 {
   "name": "caca-vagas",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "type": "module",
   "description": "Caça-vagas + currículo adaptado. Busca vagas (portais, ATS e LinkedIn via Apify), pontua contra o seu perfil e adapta o currículo acima do corte.",

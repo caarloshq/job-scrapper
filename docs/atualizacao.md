@@ -1,6 +1,6 @@
 # Receba avisos de versões e preserve seus dados ao atualizar
 
-As versões publicadas ficam em Releases, com acesso pelo [README](../README.md#versões-e-atualizações). Cada release identifica uma tag, mudanças, limites e o código disponível para download. A versão 1.1.0 inclui a padronização de fonte de estado, registro Markdown, autonomia e atualização. O QA é local; não houve piloto real de candidaturas nesta entrega.
+As versões publicadas ficam em Releases, com acesso pelo [README](../README.md#receba-e-instale-atualizações). Cada release identifica uma tag, mudanças, limites e o código disponível para download. A versão 1.1.0 inclui a padronização de fonte de estado, registro Markdown, autonomia e atualização. O QA é local; não houve piloto real de candidaturas nesta entrega.
 
 ## Como saber de uma versão nova
 
