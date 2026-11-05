@@ -18,6 +18,19 @@ parentesco, participação societária, experiência anterior, idioma ou contrib
 open source. Um vínculo confirmado para uma empresa não responde sobre outra.
 Cargo anterior não é empresa atual; último salário não é remuneração atual.
 
+## Toda resposta e pergunta pendente deixa registro
+
+O maestro/aplicador é responsável por salvar o que recebe e o que preenche. O preparador pode sugerir texto com fontes; não marca campo como preenchido nem resposta como aprovada. O revisor independente compara o pacote e seus registros e informa lacunas ao principal. Não existe um agente de memória autônomo nem captura automática do navegador. Os comandos validam os arquivos fornecidos; não descobrem sozinhos um campo omitido do registro.
+
+- `data/perguntas.json` é o banco de perguntas e textos reutilizáveis, com fonte, idioma, escopo e aprovação. Fatos e autorizações continuam no perfil. Resposta interativa nova guarda também a pergunta e a fala original, fonte e data; uma instrução para rascunhar não vira aprovação.
+- `data/respostas-enviadas/<id-seguro>-<data>.json` registra o valor efetivamente preenchido em cada campo, inclusive em rascunho: texto aberto integral, alternativas, números, moeda/período, links e referência do anexo. Opcional vazio fica identificado como não preenchido. Documento e autodeclaração sensível ficam apenas na fonte privada, sem valor no histórico.
+- `data/pendencias-perguntas-AAAA-MM-DD.json` registra pergunta literal/opções, ID da vaga, empresa, URL/etapa, fonte consultada, o que falta e eventual rascunho não aprovado. Use ID estável por pendência e estados `pendente`, `respondida` e `aplicada`. Omitir uma pergunta numa lista nova não a resolve. Resposta recebida só passa a aplicada após conferência do campo.
+- `../revisoes/respostas.md` é a visualização humana: uma seção por empresa/vaga/data/estado, pergunta literal e resposta integral, ou `(falta você)`. Não é outro banco de fatos. Nunca criar `vagas/respostas.md`: em sistemas sem distinção de maiúsculas, esse nome pode sobrescrever este `RESPOSTAS.md`.
+
+Salvar a resposta e sua aprovação antes de usar; salvar o valor efetivo antes de retomar ou transmitir; comparar com o campo real. Se o registro falhar, bloquear essa candidatura, preservar o formulário e continuar trabalho independente. Não registrar como enviada sem confirmação da plataforma. O validador público ainda não reconcilia automaticamente todas as filas datadas nem o Markdown; cabe ao principal conferi-los, e ausência de erro estrutural não comprova cobertura completa.
+
+Os históricos por vaga, pendências e espelho ficam locais e devem entrar na cópia de segurança da instalação. O repositório distribuído contém exemplos versionados de banco/perfil/quadro; depois de personalizá-los, revise o que será publicado. A exclusão do Git não protege um arquivo que já é rastreado.
+
 ## O que se reutiliza
 
 | `uso` no banco | Procedimento |

@@ -54,6 +54,10 @@ Cada vaga recebe uma nota para organizar a leitura. Essa nota não representa su
 
 No quadro, você pode mover as vagas entre Avaliar, Aplicar, Já apliquei, Entrevista e Cancelada. Para atualizar a busca, execute outra rodada. A execução diária depende de configurar um agendamento com o assistente.
 
+## Versões e atualizações
+
+Consulte as [Releases](https://github.com/caarloshq/job-scrapper/releases) e o [guia de atualização](docs/atualizacao.md). O guia explica avisos do GitHub, atualização com Git ou ZIP e preservação dos seus dados. Pré-releases identificam versões ainda em avaliação.
+
 ## Seus dados e as conexões externas
 
 O formulário salva suas respostas e arquivos neste computador, na pasta do projeto, sem enviá-los a um servidor externo. A coleta de vagas consulta serviços externos; a integração com o LinkedIn usa a Apify. Ao trabalhar com seu currículo no Claude Code ou no Codex, o conteúdo usado na conversa depende das configurações e políticas dessa ferramenta.

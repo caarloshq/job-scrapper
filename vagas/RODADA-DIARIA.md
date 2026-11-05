@@ -404,3 +404,7 @@ Espelhar antes de coletar, porque coletar sem saber o que está concluído reofe
   status previsto acima; intenção de aplicar não equivale a envio.
 - **Não inventa nada no currículo.** A skill parte do `base_content` verificado e só reordena e realça. Vaga pede skill que você não tem: a skill não entra, vira linha em `Gaps`.
 - **Não edita `data/quadro.json` à mão.**
+
+## Registrar respostas antes de retomar
+
+O maestro/aplicador salva todas as respostas abertas integralmente, valores preenchidos e perguntas pendentes conforme [RESPOSTAS.md](RESPOSTAS.md), inclusive em candidaturas em rascunho. Mantém `../revisoes/respostas.md` como visualização para revisão; o banco e o histórico por vaga são as fontes dos registros. O revisor aponta lacunas antes da liberação; falha de registro bloqueia somente a candidatura afetada. A comparação com o formulário é responsabilidade do agente e não é automatizada pelo validador.
