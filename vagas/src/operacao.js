@@ -238,13 +238,22 @@ function comLock(p, fn, recuperar = false) {
       if (!recuperar) falha('ESCRITA_OCUPADA', 'lock existente; recuperação requer parada confirmada');
       const antigo = fs.lstatSync(p.lock);
       if (!antigo.isDirectory() || antigo.isSymbolicLink()) falha('CAMINHO_INSEGURO', p.lock);
-      const donoLock = lerJsonSeguro(path.join(p.lock, 'dono.json'));
-      if (pidVivo(donoLock.pid)) falha('ESCRITA_OCUPADA', `processo ${donoLock.pid} ainda está vivo`);
+      let donoLock, donoAusente = false;
+      try { donoLock = lerJsonSeguro(path.join(p.lock, 'dono.json')); }
+      catch (erroDono) {
+        if (!erroDono.message.startsWith('ARQUIVO_AUSENTE:')) throw erroDono;
+        if (fs.readdirSync(p.lock).length) falha('LOCK_INCOMPLETO', 'dono ausente em lock não vazio');
+        donoAusente = true;
+      }
+      if (pidVivo(donoLock?.pid)) falha('ESCRITA_OCUPADA', `processo ${donoLock.pid} ainda está vivo`);
+      const atual = fs.lstatSync(p.lock);
+      if (atual.dev !== antigo.dev || atual.ino !== antigo.ino) falha('LOCK_TROCADO_DURANTE_RECUPERACAO');
       const quarentena = `${p.lock}.revogado-${crypto.randomUUID()}`;
       fs.renameSync(p.lock, quarentena);
       const movido = fs.lstatSync(quarentena);
       if (movido.dev !== antigo.dev || movido.ino !== antigo.ino) falha('LOCK_TROCADO_DURANTE_RECUPERACAO');
-      fs.rmSync(quarentena, { recursive: true });
+      if (donoAusente && fs.readdirSync(quarentena).length) falha('LOCK_INCOMPLETO', 'lock mudou durante recuperação');
+      if (!donoAusente) fs.rmSync(quarentena, { recursive: true });
       try { fs.mkdirSync(p.lock); }
       catch { falha('ESCRITA_OCUPADA', 'outro processo adquiriu o lock'); }
     }
@@ -677,17 +686,19 @@ export function operar(dirDados, acao, args = {}) {
     if (acao === 'revisar') {
       const entrega = estado.entregas[string(args.entregaId, 'entregaId')];
       if (!entrega) falha('ENTREGA_AUSENTE');
+      if (estado.tarefas[entrega.chave]?.entregaId !== entrega.entregaId) falha('ENTREGA_SUPERADA');
       if (['terminal', 'enviada', 'envio_incerto', 'aguardando_pessoa', 'bloqueada_tecnica'].includes(estado.tarefas[entrega.chave]?.estado)) falha('VAGA_BLOQUEADA');
       conferirHashesFontes(entrega, p.dados, estado);
       conferirHashesArtefatos(entrega, p.dados);
-      if (entrega.autor === args.revisor) falha('REVISAO_NAO_INDEPENDENTE');
+      const revisor = string(args.revisor, 'revisor');
+      if (entrega.autor === revisor) falha('REVISAO_NAO_INDEPENDENTE');
       if (string(args.hash, 'hash') !== entrega.hash) falha('HASH_DIVERGENTE');
       if (entrega.revisao) {
-        if (entrega.revisao.revisor === args.revisor && entrega.revisao.parecer === args.parecer) return { entrega, repetida: true };
+        if (entrega.revisao.revisor === revisor && entrega.revisao.parecer === args.parecer) return { entrega, repetida: true };
         falha('REVISAO_IMUTAVEL');
       }
       if (!['aprovado', 'reprovado'].includes(args.parecer)) falha('PARECER_INVALIDO');
-      entrega.revisao = { revisor: string(args.revisor, 'revisor'), parecer: args.parecer, em: agora(), hash: entrega.hash };
+      entrega.revisao = { revisor, parecer: args.parecer, em: agora(), hash: entrega.hash };
       entrega.estado = args.parecer === 'aprovado' ? 'revisada' : 'reprovada';
       estado.tarefas[entrega.chave].estado = entrega.estado;
       // Parecer é uma revisão do manifesto, não altera o arquivo imutável entregue pelo autor.

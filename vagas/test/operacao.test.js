@@ -384,3 +384,38 @@ test('crash entre mkdir do guard e gravação do dono permanece bloqueado até m
   assert.throws(() => operar(dados, 'manutencao_guard', { fingerprint: diagnostico.fingerprint, confirmacaoRef: 'fixture:parada' }), /PARADA_GLOBAL_NAO_CONFIRMADA/);
   assert.equal(fs.existsSync(guard), true);
 });
+
+test('revisão tardia não tira a entrega atual da fila nem permite autorrevisão normalizada', t => {
+  const dados = fixture(t);
+  const { token } = operar(dados, 'iniciar', { dono: 'maestro', bootstrapNovo: true });
+  const identidade = { canonico: 'req:revisao-tardia' };
+  const { reserva } = operar(dados, 'reservar', { token, identidade, etapa: 'preparar', dono: 'autor' });
+  const fontesLocais = fonteLocal(dados, token, identidade);
+  const base = { token, taskId: reserva.taskId, tipo: 'pacote', autor: 'autor', versoes: { anuncio: 'v1' }, fontesLocais };
+  const antiga = operar(dados, 'entregar', { ...base, revisao: 1 }).entrega;
+  const atual = operar(dados, 'entregar', { ...base, revisao: 2, substituiId: antiga.entregaId, evidencias: ['nova revisão'] }).entrega;
+  assert.throws(() => operar(dados, 'revisar', { token, entregaId: antiga.entregaId, hash: antiga.hash, revisor: 'outro', parecer: 'aprovado' }), /ENTREGA_SUPERADA/);
+  assert.deepEqual(operar(dados, 'planejar').papeis.revisao, [{ chave: 'req:revisao-tardia', entregaId: atual.entregaId }]);
+  assert.equal(operar(dados, 'status').estado.tarefas['req:revisao-tardia'].estado, 'em_revisao');
+  assert.throws(() => operar(dados, 'revisar', { token, entregaId: atual.entregaId, hash: atual.hash, revisor: ' autor ', parecer: 'aprovado' }), /REVISAO_NAO_INDEPENDENTE/);
+  const revisada = operar(dados, 'revisar', { token, entregaId: atual.entregaId, hash: atual.hash, revisor: ' outro ', parecer: 'aprovado' }).entrega;
+  assert.equal(revisada.revisao.revisor, 'outro');
+});
+
+test('retomada confirmada recupera lock vazio de crash e revoga geração antiga', t => {
+  const dados = fixture(t);
+  const { token: antigo } = operar(dados, 'iniciar', { dono: 'antigo', bootstrapNovo: true });
+  const lock = path.join(dados, 'operacao', '.escrita.lock');
+  fs.mkdirSync(lock);
+  assert.throws(() => operar(dados, 'retomar', { dono: 'novo', runId: antigo.runId }), /ESCRITA_OCUPADA/);
+  assert.equal(fs.existsSync(lock), true);
+  fs.writeFileSync(path.join(lock, 'dono.json'), '{');
+  assert.throws(() => operar(dados, 'retomar', { dono: 'novo', runId: antigo.runId, paradaConfirmada: true }), /JSON_INVALIDO/);
+  fs.unlinkSync(path.join(lock, 'dono.json'));
+  const { token: novo } = operar(dados, 'retomar', { dono: 'novo', runId: antigo.runId, paradaConfirmada: true });
+  assert.ok(novo.geracao > antigo.geracao);
+  assert.equal(fs.existsSync(lock), false);
+  assert.equal(fs.readdirSync(path.dirname(lock)).filter(nome => nome.startsWith('.escrita.lock.revogado-')).length, 1);
+  assert.throws(() => operar(dados, 'reservar', { token: antigo, identidade: { canonico: 'req:velha' }, etapa: 'preparar', dono: 'antigo' }), /POSSE_NEGADA/);
+  assert.equal(operar(dados, 'status').estado.dono, 'novo');
+});
