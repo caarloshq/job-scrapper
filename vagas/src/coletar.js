@@ -3,6 +3,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import * as apify from './fontes/apify.js';
+import { consultarCota } from './cota-apify.js';
 import { criarFontes } from './fontes-registro.js';
 import { verificarVersaoGit, formatarVersaoGit } from './versao-git.js';
 import * as ddg from './busca/ddg.js';
@@ -16,6 +17,7 @@ import * as cache from './cache.js';
 import * as semantico from './semantico.js';
 import * as arquivo from './arquivo.js';
 import * as quadro from './quadro.js';
+import { configuracao as fonteEstado } from './fonte-estado.js';
 import { readFileSync } from 'node:fs';
 import { perfil, palavras, linkedin, DIR_DADOS, RAIZ } from './config.js';
 import { hoje, dormir } from './util.js';
@@ -31,13 +33,12 @@ const empresasAts = JSON.parse(readFileSync(join(RAIZ, 'config', 'empresas-ats.j
 // Camada 4: LinkedIn via Apify. So precisa de APIFY_TOKEN no `.env` (ver
 // .env.example): sem APIFY_TASK, dispara o Actor de config/linkedin.json com a
 // busca de la; com APIFY_TASK, a Task da conta manda. A ausencia do token NAO
-// derruba a rodada: as outras fontes seguem. Dispara run novo a cada rodada
-// (decisao de 2026-08-10: sempre dataset fresco, custa credito e ate 8min a
-// mais por rodada). Para reimportar sem gastar credito, `npm run apify -- --ultimo`.
+// derruba a rodada. A primeira tentativa paga do dia reserva a cota; as demais
+// reutilizam o ultimo run por GET.
 const apifyOpcoes = { token: process.env.APIFY_TOKEN, task: process.env.APIFY_TASK, linkedin };
 const apifyFonte = {
   NOME: apify.NOME,
-  coletar: () => apify.coletar({ ...apifyOpcoes, usarUltimo: false }),
+  coletar: async () => apify.coletar({ ...apifyOpcoes, usarUltimo: consultarCota({ dirDados: DIR_DADOS }).usado }),
 };
 
 // Todas as fontes que existem. Quais entram e decisao do perfil (mercado e
@@ -61,6 +62,9 @@ const forcar = process.argv.includes('--forcar');
 const semDdg = process.argv.includes('--sem-ddg');
 
 async function main() {
+  // Falha antes da coleta de rede se o Notion foi escolhido sem snapshot
+  // íntegro da database configurada. Releitura após a rede pega o mais novo.
+  arquivo.carregar();
   entrarEscritor('coleta');
   console.log(formatarVersaoGit(await verificarVersaoGit({ cwd: RAIZ })));
   const inicio = Date.now();
@@ -241,7 +245,11 @@ async function main() {
 
   // Toda vaga aprovada entra no quadro em "Avaliar". Quem ja esta la so tem o
   // retrato atualizado; status e historico ficam como a pessoa deixou.
-  const noQuadro = quadro.registrar(aprovadas.filter((v) => !v.concluida));
+  // No modo Notion a rodada só lê o snapshot. A publicação/status pertence ao
+  // agente conectado; não se cria card local como se fosse status verdadeiro.
+  const noQuadro = fonteEstado().fonte === 'local'
+    ? quadro.registrar(aprovadas.filter((v) => !v.concluida))
+    : { novas: 0, atualizadas: 0 };
 
   const porFonte = {};
   for (const v of aprovadas) porFonte[v.fonte] = (porFonte[v.fonte] || 0) + 1;
@@ -316,7 +324,7 @@ function imprimir(r, aprovadas) {
   console.log(`  ja no quadro ................. ${t.jaNoNotion}`);
   console.log(`  concluidas (fora do radar) ... ${t.concluidas}`);
   console.log(`  NOVAS no quadro .............. ${t.novasNoQuadro}`);
-  console.log('\n  Quadro: npm run quadro');
+  console.log(fonteEstado().fonte === 'local' ? '\n  Quadro: npm run quadro' : '\n  Estado Notion: consulte a database pelo agente e importe um novo snapshot antes da próxima rodada.');
 
   console.log(`\nPor janela de frescor`);
   for (const [k, v] of Object.entries(r.porJanela)) console.log(`  ${k.padEnd(14)} ${v}`);

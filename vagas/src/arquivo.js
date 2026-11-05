@@ -1,7 +1,6 @@
-// O leitor do estado das vagas. Desde 2026-09-14 o estado e o QUADRO local
-// (data/quadro.json, escrito por src/quadro.js e movido no navegador por
-// scripts/quadro.mjs). Quem usa Notion pode continuar espelhando a database
-// aqui com `espelhar()`: o formato e o mesmo, so muda quem escreve.
+// O leitor do estado das vagas. O padrão é o quadro local (data/quadro.json).
+// A instalação pode escolher Notion; nesse modo o leitor usa data/notion.json,
+// importado pelo agente, sem misturar status ou escrita com o quadro local.
 //
 // O nome `noNotion` ficou por compatibilidade: significa "ja esta no quadro".
 //
@@ -12,6 +11,7 @@
 import { join } from 'node:path';
 import { DIR_DADOS } from './config.js';
 import { lerEstado, salvarEstado } from './estado-central.js';
+import { carregarFonte, exigirLocal } from './fonte-estado.js';
 import { normalizarLink } from './util.js';
 import { chaveAnuncio, chaveRequisicao, idCanonico, requisicoesConflitam } from './dedupe.js';
 
@@ -36,14 +36,16 @@ export const CONCLUIDOS = ['Já apliquei', 'Entrevista', 'Cancelada', 'Aplicado 
 // `Avaliar`, `Aplicar` e `Revisar` sao ativos: continuam no radar.
 
 export function carregar() {
-  return lerEstado(ARQ, { versao: 1, sincronizadoEm: null, vagas: {} });
+  return carregarFonte();
 }
 
 /**
- * Regrava o espelho inteiro com o que veio do Notion.
+ * Compatibilidade legada local: regrava linhas no quadro local. No modo Notion
+ * a importação completa passa por fonte-estado.js e nunca escreve aqui.
  * @param {Array<{idExterno:string, status:string, empresa?:string, titulo?:string, url?:string}>} linhas
  */
 export function espelhar(linhas) {
+  exigirLocal();
   // Preserva historico e retrato de quem ja esta no quadro: espelhar nunca apaga.
   const antes = carregar();
   const d = antes;

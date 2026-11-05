@@ -226,3 +226,12 @@ Medido no dataset real de 2026-08-01, 50 vagas. Cada decisão em `src/fontes/api
 - **`seniorityLevel` traz `"Entry level"`**, que é júnior e sai. `"Mid-Senior level"` junta pleno e sênior num rótulo só, então não decide nada.
 - **O remoto vem do `f_WT=2`** na URL de busca, que é o filtro do LinkedIn. Sem a marca, devolve `null` e o filtro decide pelas outras pistas — nunca assume.
 - **Prioridade 7 no dedupe**, abaixo da ATS de origem e acima dos agregadores BR: 37 das 50 são "External Apply", ou seja a página do LinkedIn só redireciona para a ATS.
+
+## Comandos da padronização
+
+- `npm run estado`: consultar/escolher local ou Notion e importar snapshot normalizado completo.
+- `npm run registrar:respostas`: acrescentar os textos efetivamente preenchidos ao Markdown do projeto.
+- `npm run atualizar`: conferir/aplicar a release estável quando a instalação Git e a operação permitirem.
+- A tarefa recorrente opcional roda a cada quatro horas pelo assistente. Apify paga é limitada pelo módulo a um POST por dia da instalação; `--ultimo` reutiliza o dataset.
+
+Escolher Chrome no onboarding não concede autorização irrestrita. Em modo mapear, não preencher ou enviar. Dados e registros privados da instalação ficam fora da publicação pública.

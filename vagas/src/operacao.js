@@ -25,6 +25,7 @@ const caminhos = dirDados => {
     pasta: path.join(dados, 'operacao'),
     lock: path.join(dados, 'operacao', '.escrita.lock'),
     recuperacao: path.join(dados, 'operacao', '.recuperacao.lock'),
+    atualizacao: path.join(dados, 'operacao', '.atualizacao.lock'),
     backupsRecuperacao: path.join(dados, 'operacao', 'backups-recuperacao'),
     estado: path.join(dados, 'operacao', 'estado.json'),
     controle: path.join(dados, 'controle-operacao.json'),
@@ -195,6 +196,10 @@ function manutencaoGuard(p, args) {
 }
 
 function comLock(p, fn, recuperar = false) {
+  const exigirSemAtualizacao = () => {
+    if (fs.lstatSync(p.atualizacao, { throwIfNoEntry: false })) falha('ATUALIZACAO_EM_ANDAMENTO', 'aguarde a atualização terminar antes de operar');
+  };
+  exigirSemAtualizacao();
   try { fs.mkdirSync(p.pasta); }
   catch (erro) { if (erro.code !== 'EEXIST') throw erro; }
   const infoPasta = fs.lstatSync(p.pasta);
@@ -258,10 +263,12 @@ function comLock(p, fn, recuperar = false) {
       catch { falha('ESCRITA_OCUPADA', 'outro processo adquiriu o lock'); }
     }
     meuLock = fs.lstatSync(p.lock);
+    exigirSemAtualizacao();
     nonceLock = crypto.randomUUID();
     if (fs.existsSync(p.recuperacao) && !recuperar) falha('RECUPERACAO_OCUPADA');
     gravarJsonAtomico(path.join(p.lock, 'dono.json'), { pid: process.pid, nonce: nonceLock, desde: agora() });
     if (fs.existsSync(p.recuperacao) && !recuperar) falha('RECUPERACAO_OCUPADA');
+    exigirSemAtualizacao();
     const resultado = fn();
     if (resultado && typeof resultado.then === 'function') falha('CALLBACK_ASSINCRONO_NAO_SUPORTADO', 'escrita central exige callback síncrono');
     return resultado;
@@ -494,7 +501,13 @@ export function consultarOperacao(dirDados) {
 }
 
 /** Não autoriza UI. Bloqueia toda tentativa anterior sem confirmação ou desfecho explícito. */
+function conferirModoCandidatura(dirDados) {
+  const politica = lerJsonSeguro(path.join(dirDados, 'politica-autonomia.json'), null);
+  if (politica && politica.modoCandidatura !== 'chrome_assistido') falha('MODO_MAPEAMENTO', 'candidaturas desativadas na política local');
+}
+
 export function validarEnvio(dirDados, identidade) {
+  conferirModoCandidatura(dirDados);
   const p = caminhos(dirDados);
   const estado = lerEstado(p);
   verificarGeracao(p, estado);
@@ -720,6 +733,7 @@ export function operar(dirDados, acao, args = {}) {
       return { chave: entrega.chave, pronta: estado.prontas[entrega.chave] };
     }
     if (acao === 'intencao') {
+      conferirModoCandidatura(dirDados);
       const chave = chaveExistente(estado, args.identidade);
       if (!chave) falha('IDENTIDADE_NAO_RESOLVIDA');
       if (!args.versoes || typeof args.versoes !== 'object' || Array.isArray(args.versoes) || !Object.keys(args.versoes).length) falha('VERSOES_ATUAIS_OBRIGATORIAS');

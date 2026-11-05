@@ -1,10 +1,10 @@
 # Receba avisos de versões e preserve seus dados ao atualizar
 
-As versões publicadas ficam em Releases, com acesso pelo [README](../README.md#versões-e-atualizações). Cada release identifica uma tag, mudanças, limites e o código disponível para download. A série `v1.1.0-rc` é uma pré-release para avaliação: a coordenação local passou em testes offline, mas não houve piloto real de candidaturas.
+As versões publicadas ficam em Releases, com acesso pelo [README](../README.md#versões-e-atualizações). Cada release identifica uma tag, mudanças, limites e o código disponível para download. A versão 1.1.0 inclui a padronização de fonte de estado, registro Markdown, autonomia e atualização. O QA é local; não houve piloto real de candidaturas nesta entrega.
 
 ## Como saber de uma versão nova
 
-No GitHub, abra **Watch → Custom → Releases** para acompanhar publicações, conforme suas preferências de notificação da conta. Consulte a página de Releases para pré-releases; elas não devem ser tratadas como a versão estável mais recente. Uma release não instala atualizações no computador. O projeto não possui notificação interna de novas releases nem atualizador automático.
+No GitHub, abra **Watch → Custom → Releases** para acompanhar publicações, conforme suas preferências de notificação da conta. Consulte a página de Releases para pré-releases; elas não devem ser tratadas como a versão estável mais recente. Uma release não instala atualizações no computador. As entradas `npm run rodada`, `apify` e `enriquecer` tentam aplicar a release estável antes de importar o código da operação. O atualizador usa origem e tag conferidas, avanço linear e exclusão com a operação. Código local alterado, operação ativa, origem divergente ou release que toca dados protegidos impedem a atualização sem apagar arquivos. Consulte [os detalhes e bloqueios](atualizacao-automatica.md). Não há atualização automática a partir de ZIP; o caminho recomendado é instalação por Git com o assistente.
 
 `npm run verificar:versao`, dentro de `vagas/`, compara commits do branch acompanhado com o remoto. Esse comando não consulta releases, não atualiza arquivos e pode informar versão desconhecida numa pasta baixada por ZIP ou num checkout de tag.
 

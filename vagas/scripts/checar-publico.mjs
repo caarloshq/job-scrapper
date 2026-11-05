@@ -60,7 +60,7 @@ for (const arq of listarVersionaveis()) {
   const linhas = readFileSync(arq, 'utf8').split('\n');
   linhas.forEach((l, i) => {
     for (const p of PADROES) {
-      if (p.test(l)) {
+      if (p.test(l.replace(/https:\/\/(?:github\.com\/caarloshq\/job-scrapper(?:\.git)?|api\.github\.com\/repos\/caarloshq\/job-scrapper)(?=[/\s'"`),]|$)/g, 'REPOSITORIO_PUBLICO'))) {
         problemas++;
         console.log(`  ${relative(REPO, arq)}:${i + 1}  ${p}  ${l.trim().slice(0, 80)}`);
         break;

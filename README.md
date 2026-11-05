@@ -19,6 +19,14 @@ Criado por [Carlos Henrique](https://www.linkedin.com/in/caarloshq), Product Des
 - **Seu currículo em PDF.** O PDF do perfil do LinkedIn é opcional.
 - **Uma conta na Apify, se quiser incluir vagas do LinkedIn.** É uma conexão opcional e pode ter custo conforme o uso. Confira os valores no serviço antes de ativá-la.
 
+## Instale e configure com uma instrução ao assistente
+
+Abra uma conversa no seu assistente com acesso ao terminal e cole:
+
+> Instale https://github.com/caarloshq/job-scrapper em uma pasta própria, sem sobrescrever projetos existentes. Leia AGENTS.md, ONBOARDING.md e docs/instalar-com-agente.md. Conduza o onboarding comigo: profissão, currículo, filtros, quadro local ou minha conexão Notion, e escolha entre só mapear vagas ou candidatar com minha conexão Chrome. Não peça credenciais no chat. Se eu escolher autonomia, configure uma tarefa nativa a cada quatro horas apontando para vagas/RODADA-DIARIA.md, com Apify paga no máximo uma vez por dia. Mostre no chat a configuração e o prompt da tarefa; se o agendador não estiver disponível, entregue o prompt sem afirmar que criou a tarefa. Preserve meus dados nas atualizações e confirme antes de qualquer gasto ou ação que não tenha autorização.
+
+O [guia de instalação com agente](docs/instalar-com-agente.md) detalha a configuração. A opção de candidatura começa desligada; o agendamento e as conexões usam a conta da própria pessoa.
+
 ## Comece aqui
 
 Abra o terminal e execute:

@@ -419,3 +419,27 @@ test('retomada confirmada recupera lock vazio de crash e revoga geração antiga
   assert.throws(() => operar(dados, 'reservar', { token: antigo, identidade: { canonico: 'req:velha' }, etapa: 'preparar', dono: 'antigo' }), /POSSE_NEGADA/);
   assert.equal(operar(dados, 'status').estado.dono, 'novo');
 });
+
+
+test('atualização exclui operação e escrita legada sem remover a trava do atualizador', t => {
+  const dados = fixture(t);
+  fs.mkdirSync(path.join(dados, 'operacao'), { recursive: true });
+  const guard = path.join(dados, 'operacao', '.atualizacao.lock');
+  fs.mkdirSync(guard);
+  assert.throws(() => operar(dados, 'iniciar', { dono: 'maestro' }), /ATUALIZACAO_EM_ANDAMENTO/);
+  assert.throws(() => comEscritaCentral(dados, () => assert.fail('não deve escrever')), /ATUALIZACAO_EM_ANDAMENTO/);
+  assert.equal(fs.existsSync(guard), true);
+  fs.rmdirSync(guard);
+  const { token } = operar(dados, 'iniciar', { dono: 'maestro', bootstrapNovo: true });
+  operar(dados, 'encerrar', { token });
+});
+
+
+test('modo mapear bloqueia validação e intenção mesmo com operação ativa', t => {
+  const dados = fixture(t);
+  const { token } = operar(dados, 'iniciar', { dono: 'maestro', bootstrapNovo: true });
+  fs.writeFileSync(path.join(dados, 'politica-autonomia.json'), JSON.stringify({ modoCandidatura: 'mapear' }));
+  assert.throws(() => validarEnvio(dados, 'vaga'), /MODO_MAPEAMENTO/);
+  assert.throws(() => operar(dados, 'intencao', { token, identidade: 'vaga', preflight }), /MODO_MAPEAMENTO/);
+  operar(dados, 'encerrar', { token });
+});

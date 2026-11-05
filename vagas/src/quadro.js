@@ -16,6 +16,7 @@ import { DIR_DADOS } from './config.js';
 import * as arquivo from './arquivo.js';
 import { salvarEstado } from './estado-central.js';
 import { comEscritaCentral } from './operacao.js';
+import { exigirLocal } from './fonte-estado.js';
 
 export const ARQ = join(DIR_DADOS, 'quadro.json');
 const DIR_BACKUPS = join(DIR_DADOS, 'backups');
@@ -27,11 +28,13 @@ export const STATUS_EXTRA = ['Aplicado por IA'];
 export const STATUS_INICIAL = 'Avaliar';
 
 export function carregar() {
+  exigirLocal();
   return arquivo.carregar();
 }
 
 /** Copia do dia, uma por dia, antes da primeira gravacao. Nunca sobrescreve a copia do dia. */
 export function fazerBackup(agora = new Date()) {
+  exigirLocal();
   if (!existsSync(ARQ)) return null;
   mkdirSync(DIR_BACKUPS, { recursive: true });
   const alvo = join(DIR_BACKUPS, `quadro-${agora.toISOString().slice(0, 10)}.json`);
@@ -40,6 +43,7 @@ export function fazerBackup(agora = new Date()) {
 }
 
 export function salvar(dados, agora = new Date()) {
+  exigirLocal();
   const backup = join(DIR_BACKUPS, `quadro-${agora.toISOString().slice(0, 10)}.json`);
   comEscritaCentral(DIR_DADOS, () => fazerBackup(agora), [backup]);
   dados.versao = 2;
@@ -71,6 +75,7 @@ function retrato(v) {
  * @returns {{novas: number, atualizadas: number}}
  */
 export function registrar(vagas, { agora = new Date() } = {}) {
+  exigirLocal();
   const dados = carregar();
   let novas = 0; let atualizadas = 0;
   for (const v of vagas) {
@@ -98,6 +103,7 @@ export function registrar(vagas, { agora = new Date() } = {}) {
  * o nada apagaria historico, e apagar e o que este modulo nao faz.
  */
 export function mover(idExterno, para, { por = 'pessoa', agora = new Date() } = {}) {
+  exigirLocal();
   const dados = carregar();
   if (!STATUS.includes(para) && !STATUS_EXTRA.includes(para)) throw new Error(`status desconhecido: ${para}`);
   const v = dados.vagas[idExterno];

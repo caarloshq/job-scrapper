@@ -25,3 +25,9 @@ Uma queda que deixa somente `.escrita.lock` vazio pode ser recuperada por `retom
 ## Quem registra respostas e perguntas abertas
 
 O maestro/aplicador é o dono do registro antes de retomar ou enviar: banco de perguntas, histórico por vaga, fila de pendências e espelho de revisão seguem `RESPOSTAS.md` (em `vagas/` no público). O preparador devolve rascunho com fonte e lacunas; não atesta preenchimento. O revisor confere consistência entre pacote, registros e fontes e devolve falhas ao principal. Se faltar registro, o principal bloqueia a candidatura e continua trabalho independente. Não há agente de registro autônomo nem captura automática do formulário; revisão por hash não comprova que todos os campos visíveis foram registrados.
+
+## Autonomia e atualização
+
+O onboarding entrega no resumo um prompt pronto para criar a tarefa nativa opcional de quatro em quatro horas. Os papéis permanecem fixos e os auxiliares são despachados em cada execução, com retomada e limite do runtime. Não é um daemon de modelos 24h. A escolha mapear não usa o Chrome para candidaturas; Chrome assistido depende do perfil, conexões e autorizações. A Apify paga compartilha uma intenção diária entre Task e Actor e não repete POST incerto no dia.
+
+As entradas npm tentam a atualização estável antes de carregar os módulos da rodada. A operação recusa a trava de atualização e o atualizador recusa operação ativa. Alteração de código local ou mudança da release sobre dados protegidos bloqueia o avanço. O guia `atualizacao-automatica.md` descreve os limites, incluindo instalações por ZIP. Fonte Notion usa o comando estado e snapshot paginado distinto do quadro.
