@@ -12,8 +12,10 @@
 //      primeiro export, 7 comandos apontavam para o nada, e ninguém viu até
 //      alguém rodar `npm run doctor` numa máquina limpa.
 //
-// Não lê `data/` (é de quem usa e está no .gitignore) nem `.env`.
-import { readdirSync, readFileSync, existsSync, statSync } from 'node:fs';
+// Examina o que o Git pode publicar, inclusive exceções versionáveis em `data/`.
+// Arquivos ignorados (como `.env` e saídas pessoais) ficam fora da leitura.
+import { readFileSync, existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { join, relative, resolve } from 'node:path';
 import { RAIZ } from '../src/config.js';
 
@@ -34,29 +36,27 @@ const PADROES = [
   /\b(?!123\.456\.789-00)\d{3}\.\d{3}\.\d{3}-\d{2}\b/,
 ];
 
-/** Onde a checagem não entra. */
-const IGNORAR_DIR = new Set(['.git', 'node_modules', 'data', 'builds', 'materiais-fonte', '__pycache__', 'Curriculo']);
 // README, LICENSE, PRODUCT.md e DESIGN.md citam o autor de proposito (credito, licenca e
 // origem das decisoes de produto e de design). O resto do repositorio, nao.
 const IGNORAR_ARQ = new Set(['.env', 'checar-publico.mjs', '.DS_Store', 'README.md', 'LICENSE', 'PRODUCT.md', 'DESIGN.md']);
 const EXTENSOES = /\.(js|mjs|json|md|py|html|css|txt|yml|yaml|example)$/;
 
-function listar(dir) {
-  const saida = [];
-  for (const e of readdirSync(dir, { withFileTypes: true })) {
-    if (e.isDirectory()) {
-      if (!IGNORAR_DIR.has(e.name)) saida.push(...listar(join(dir, e.name)));
-    } else if (!IGNORAR_ARQ.has(e.name) && EXTENSOES.test(e.name)) {
-      saida.push(join(dir, e.name));
-    }
-  }
-  return saida;
+function listarVersionaveis() {
+  // --cached inclui arquivos ja rastreados mesmo quando uma regra de ignore os
+  // alcança; --others inclui novas edições que poderiam entrar no proximo commit.
+  const nomes = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z'], {
+    cwd: REPO, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024,
+  }).split('\0').filter(Boolean);
+  return [...new Set(nomes)]
+    .filter((nome) => !IGNORAR_ARQ.has(nome.split('/').at(-1)) && EXTENSOES.test(nome))
+    .map((nome) => join(REPO, nome))
+    .filter(existsSync);
 }
 
 let problemas = 0;
 
 console.log('\nChecagem de repositório público\n' + '='.repeat(52) + '\n\n1. Dado pessoal em arquivo versionável');
-for (const arq of listar(REPO)) {
+for (const arq of listarVersionaveis()) {
   const linhas = readFileSync(arq, 'utf8').split('\n');
   linhas.forEach((l, i) => {
     for (const p of PADROES) {

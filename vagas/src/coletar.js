@@ -20,6 +20,7 @@ import { readFileSync } from 'node:fs';
 import { perfil, palavras, linkedin, DIR_DADOS, RAIZ } from './config.js';
 import { hoje, dormir } from './util.js';
 import { fontesAtivas } from './mercado.js';
+import { entrarEscritor } from './entrada-operacao.js';
 
 // ATS internacional entra como fonte normal, so precisa da lista de empresas.
 // Os agregadores internacionais (Himalayas, Remotive) ficaram de fora: medido
@@ -60,6 +61,7 @@ const forcar = process.argv.includes('--forcar');
 const semDdg = process.argv.includes('--sem-ddg');
 
 async function main() {
+  entrarEscritor('coleta');
   console.log(formatarVersaoGit(await verificarVersaoGit({ cwd: RAIZ })));
   const inicio = Date.now();
   const dia = hoje();
@@ -96,7 +98,7 @@ async function main() {
     }
   });
 
-  const { vagas: unicas, colisoes } = juntar(brutas);
+  const { vagas: unicas, colisoes } = juntar(brutas, { identidadeEstrita: true });
 
   // ---------- Camada 2: busca site: ----------
   let achadosBusca = [];
@@ -183,9 +185,9 @@ async function main() {
     // Cola o julgamento semantico guardado, se existir. E o que faz o numero
     // final ser o numero final, e nao metade dele.
     semantico.aplicar(v, julgamentos);
-    // O que o Notion ja sabe desta vaga. Concluida sai do radar; ja publicada
-    // deixa de ser novidade. O Notion e o estado, isto e so o espelho local.
-    arquivo.aplicar(v, notion);
+    // O que o quadro ja sabe desta vaga. Concluida sai do radar; ja publicada
+    // deixa de ser novidade. O quadro guarda o estado; isto e o espelho local.
+    arquivo.aplicar(v, notion, { identidadeEstrita: true });
     v.compatibilidade = compatibilidade(v, v.semantico);
     v.faixa = faixa(v.compatibilidade);
 
@@ -227,7 +229,7 @@ async function main() {
   // Quinta camada: reconcilia o cache inteiro, nao so o que esta rodada
   // pescou. Pega a vaga que entrou solta numa chamada anterior (ex.: `npm run
   // apify` isolado) e so agora encontra a duplicata de fonte mais forte.
-  const { vagas: reconciliadas, removidos } = reconciliarCache(c.vagas);
+  const { vagas: reconciliadas, removidos } = reconciliarCache(c.vagas, { identidadeEstrita: true });
   const listaReconciliada = Object.values(reconciliadas);
   const julgamentosAtuais = semantico.carregar();
   for (const v of listaReconciliada) semantico.aplicar(v, julgamentosAtuais);

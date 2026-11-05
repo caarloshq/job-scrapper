@@ -42,6 +42,27 @@ test('vagas diferentes nao colidem', () => {
   assert.equal(colisoes, 0);
 });
 
+test('modo estrito preserva vagas apenas parecidas e sinaliza conflito', () => {
+  const lista = [
+    { idExterno: 'fonte:a', fonte: 'Gupy', empresa: 'Acme', titulo: 'Product Designer', link: 'https://a.example/1' },
+    { idExterno: 'fonte:b', fonte: 'Gupy', empresa: 'Acme', titulo: 'Product Designer', link: 'https://b.example/2' },
+  ];
+  const { vagas } = juntar(lista, { identidadeEstrita: true });
+  assert.equal(vagas.length, 2);
+  assert.ok(vagas.every(v => v.conflitoIdentidade === true));
+  assert.deepEqual(vagas[0].possiveisDuplicatas, ['fonte:b']);
+  assert.equal(Object.keys(reconciliarCache(Object.fromEntries(lista.map(v => [v.idExterno, v])), { identidadeEstrita: true }).vagas).length, 2);
+});
+
+test('modo estrito ainda une identidade forte pelo mesmo link', () => {
+  const { vagas } = juntar([
+    { idExterno: 'fonte:a', fonte: 'Gupy', empresa: 'Acme', titulo: 'Product Designer', link: 'https://a.example/1' },
+    { idExterno: 'fonte:b', fonte: 'Remotar', empresa: 'Acme', titulo: 'Product Designer', link: 'https://a.example/1?utm_source=board' },
+  ], { identidadeEstrita: true });
+  assert.equal(vagas.length, 1);
+  assert.notEqual(vagas[0].conflitoIdentidade, true);
+});
+
 test('vaga sem link ainda dedupa por id', () => {
   const { vagas } = juntar([
     { idExterno: 'gupy:1', fonte: 'Gupy', titulo: 'A', link: null },

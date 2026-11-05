@@ -101,6 +101,17 @@ test('acha por empresa+titulo quando o link nao tem nada em comum', () => {
   assert.equal(v.concluida, false);
 });
 
+test('modo estrito não conclui vaga só por empresa e título parecidos no quadro', () => {
+  const dados = { versao: 2, vagas: {
+    'board:1': { status: 'Já apliquei', empresa: 'Acme', titulo: 'Product Designer', url: 'https://a.example/1' },
+  } };
+  const vaga = aplicar({ idExterno: 'board:2', link: 'https://b.example/2', empresa: 'Acme', titulo: 'Product Designer' }, dados, { identidadeEstrita: true });
+  assert.equal(vaga.concluida, false);
+  assert.equal(vaga.noNotion, false);
+  assert.equal(vaga.conflitoIdentidade, true);
+  assert.equal(vaga.possivelDuplicataQuadro, 'Já apliquei');
+});
+
 test('empresa+titulo nao vale para agregador — Jobgether nao e quem contrata', () => {
   const dados = { versao: 1, vagas: {
     'vagasremotas:a': { status: 'Avaliar', empresa: 'Jobgether', titulo: 'Product Designer', url: 'https://a.com/1' },

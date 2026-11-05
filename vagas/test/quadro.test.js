@@ -1,6 +1,6 @@
 import { test, beforeEach, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync, existsSync, readFileSync, readdirSync } from 'node:fs';
+import { mkdtempSync, rmSync, existsSync, readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
@@ -96,4 +96,19 @@ test('card movido no meio de uma rodada lenta nao volta para tras', () => {
   assert.equal(quadro.carregar().vagas.a.status, 'Entrevista');
   assert.equal(quadro.carregar().vagas.a.compatibilidade, 90);
   assert.equal(copiaVelha.vagas.a.status, 'Avaliar');
+});
+
+test('JSON inválido bloqueia a rodada sem apagar o quadro', () => {
+  const caminho = join(dir, 'quadro.json');
+  writeFileSync(caminho, '{');
+  assert.throws(() => quadro.registrar([vaga('a')]), /JSON_INVALIDO/);
+  assert.equal(readFileSync(caminho, 'utf8'), '{');
+});
+
+test('cópia antiga não substitui card movido por outro escritor', () => {
+  quadro.registrar([vaga('a')]);
+  const antiga = quadro.carregar();
+  quadro.mover('a', 'Aplicar');
+  assert.throws(() => quadro.salvar(antiga), /Conflito de versão/);
+  assert.equal(quadro.carregar().vagas.a.status, 'Aplicar');
 });
